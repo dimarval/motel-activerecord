@@ -4,3 +4,5 @@ require 'motel/manager'
 require 'motel/reservations'
 require 'motel/errors'
 
+require 'motel/railtie' if defined? Rails
+
