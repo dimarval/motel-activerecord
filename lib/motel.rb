@@ -1,0 +1,3 @@
+require 'motel/reservations'
+
+
