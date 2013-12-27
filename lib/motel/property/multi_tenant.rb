@@ -14,6 +14,8 @@ module Motel
       module ClassMethods
 
         def establish_connection(tenant_name)
+          raise NonexistentTenantError unless motel.tenant?(tenant_name)
+
           resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(
             motel.tenant(tenant_name), nil
           )
