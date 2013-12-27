@@ -29,7 +29,7 @@ module Motel
         end
 
         def connection_pool
-          connection_handler.retrieve_connection_pool(motel.determines_tenant) or raise ActiveRecord::ConnectionNotEstablished
+          connection_handler.retrieve_connection_pool(motel.determines_tenant)
         end
 
         def retrieve_connection
