@@ -26,7 +26,6 @@ module Motel
       def retrieve_connection_pool(tenant_name)
         class_to_pool[tenant_name] ||= begin
           pool = pool_for(tenant_name)
-          pool ||= initialize_connection(tenant_name)
 
           class_to_pool[tenant_name] = pool
         end
@@ -48,6 +47,8 @@ module Motel
             # subsequently forked. We can't reuse the connection, but we can copy
             # the specification and establish a new connection with it.
             establish_connection tenant_name, ancestor_pool.spec
+          else
+            initialize_connection(tenant_name)
           end
         }
       end
