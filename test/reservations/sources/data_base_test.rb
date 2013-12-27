@@ -9,7 +9,7 @@ module Motel
       class DataBaseTest < Test::Unit::TestCase
 
         def setup
-          spec = { adapter: 'sqlite3', database: './test/files/test.sqlite3' }
+          spec = { adapter: 'sqlite3', database: 'test/files/db/tenants.sqlite3' }
           resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(spec, nil)
 
           @current_tenant = 'test'
@@ -22,12 +22,12 @@ module Motel
 
           @foo_tenant_sql = <<-SQL
             INSERT INTO #{@table_name}(`name`, `adapter`, `database`)
-            VALUES ("foo", "sqlite3", "db/foo.sqlite3")
+            VALUES ("foo", "sqlite3", "test/files/db/foo.sqlite3")
           SQL
 
           @bar_tenant_sql = <<-SQL
             INSERT INTO #{@table_name}(`name`, `adapter`, `database`)
-            VALUES ("bar", "sqlite3", "db/bar.sqlite3")
+            VALUES ("bar", "sqlite3", "test/files/db/bar.sqlite3")
           SQL
         end
 
@@ -60,11 +60,11 @@ module Motel
 
           assert       @tenants_source.tenants.key?('foo')
           assert_equal @tenants_source.tenants['foo']['adapter'],  'sqlite3'
-          assert_equal @tenants_source.tenants['foo']['database'], 'db/foo.sqlite3'
+          assert_equal @tenants_source.tenants['foo']['database'], 'test/files/db/foo.sqlite3'
 
           assert       @tenants_source.tenants.key?('bar')
           assert_equal @tenants_source.tenants['bar']['adapter'],  'sqlite3'
-          assert_equal @tenants_source.tenants['bar']['database'], 'db/bar.sqlite3'
+          assert_equal @tenants_source.tenants['bar']['database'], 'test/files/db/bar.sqlite3'
         end
 
         def test_tenant?
@@ -83,26 +83,26 @@ module Motel
           end
 
           assert_equal @tenants_source.tenant('foo')['adapter'],  'sqlite3'
-          assert_equal @tenants_source.tenant('foo')['database'], 'db/foo.sqlite3'
+          assert_equal @tenants_source.tenant('foo')['database'], 'test/files/db/foo.sqlite3'
         end
 
         def test_add_no_existent_tenant
-          @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'db/foo.sqlite3' })
+          @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'test/files/db/foo.sqlite3' })
 
           result = @handler.retrieve_connection_pool(@current_tenant).with_connection do |conn|
             conn.select_all("SELECT * FROM #{@table_name}")
           end
 
-          assert_equal 1,                result.count
-          assert_equal 'foo',            result.first['name']
-          assert_equal 'sqlite3',        result.first['adapter']
-          assert_equal 'db/foo.sqlite3', result.first['database']
+          assert_equal 1,                           result.count
+          assert_equal 'foo',                       result.first['name']
+          assert_equal 'sqlite3',                   result.first['adapter']
+          assert_equal 'test/files/db/foo.sqlite3', result.first['database']
         end
 
         def test_add_existent_tenant
-          @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'db/foo.sqlite3' })
+          @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'test/files/db/foo.sqlite3' })
           assert_raise ExistingTenantError do
-            @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'db/foo.sqlite3' })
+            @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'test/files/db/foo.sqlite3' })
           end
         end
 
