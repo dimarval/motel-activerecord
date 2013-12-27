@@ -23,7 +23,7 @@ module Motel
     end
 
     initializer "motel.configure_middleware" do |app|
-      unless ActiveRecord::Base.motel.disabled_middleware
+      unless ActiveRecord::Base.motel.disable_middleware
         app.config.middleware.insert_before ActiveRecord::Migration::CheckPending, Lobby
       end
     end

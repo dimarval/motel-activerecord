@@ -4,7 +4,7 @@ module Motel
 
   class Manager
 
-    mattr_accessor :disabled_middleware
+    mattr_accessor :disable_middleware
     mattr_accessor :nonexistent_tenant_page
     mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
