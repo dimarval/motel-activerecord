@@ -16,19 +16,19 @@ module Motel
 
         def test_tenants
           @redis_server.hset "#{@prefix_tenant_alias}foo", 'adapter',  'sqlite3'
-          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'db/foo.sqlite3'
+          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'test/files/db/foo.sqlite3'
           @redis_server.hset "#{@prefix_tenant_alias}bar", 'adapter',  'sqlite3'
-          @redis_server.hset "#{@prefix_tenant_alias}bar", 'database', 'db/bar.sqlite3'
+          @redis_server.hset "#{@prefix_tenant_alias}bar", 'database', 'test/files/db/bar.sqlite3'
 
           assert_equal 2, @tenants_source.tenants.count
 
           assert       @tenants_source.tenants.key?('foo')
           assert_equal @tenants_source.tenants['foo']['adapter'],  'sqlite3'
-          assert_equal @tenants_source.tenants['foo']['database'], 'db/foo.sqlite3'
+          assert_equal @tenants_source.tenants['foo']['database'], 'test/files/db/foo.sqlite3'
 
           assert       @tenants_source.tenants.key?('bar')
           assert_equal @tenants_source.tenants['bar']['adapter'],  'sqlite3'
-          assert_equal @tenants_source.tenants['bar']['database'], 'db/bar.sqlite3'
+          assert_equal @tenants_source.tenants['bar']['database'], 'test/files/db/bar.sqlite3'
 
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'adapter'
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'database'
@@ -38,10 +38,10 @@ module Motel
 
         def test_tenant
           @redis_server.hset "#{@prefix_tenant_alias}foo", 'adapter',  'sqlite3'
-          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'db/foo.sqlite3'
+          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'test/files/db/foo.sqlite3'
 
           assert_equal @tenants_source.tenants['foo']['adapter'],  'sqlite3'
-          assert_equal @tenants_source.tenants['foo']['database'], 'db/foo.sqlite3'
+          assert_equal @tenants_source.tenants['foo']['database'], 'test/files/db/foo.sqlite3'
 
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'adapter'
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'database'
@@ -56,11 +56,11 @@ module Motel
         end
 
         def test_add_tenant
-          @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'db/foo.sqlite3' })
+          @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'test/files/db/foo.sqlite3' })
           assert_equal @redis_server.hget("#{@prefix_tenant_alias}foo", 'adapter'),  'sqlite3'
-          assert_equal @redis_server.hget("#{@prefix_tenant_alias}foo", 'database'), 'db/foo.sqlite3'
+          assert_equal @redis_server.hget("#{@prefix_tenant_alias}foo", 'database'), 'test/files/db/foo.sqlite3'
           assert_raise ExistingTenantError do
-            @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'db/foo.sqlite3' })
+            @tenants_source.add_tenant('foo', { adapter: 'sqlite3', database: 'test/files/db/foo.sqlite3' })
           end
 
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'adapter'
@@ -69,15 +69,15 @@ module Motel
 
         def test_update_tenant
           assert_raise NonexistentTenantError do
-            @tenants_source.update_tenant('foo', { adapter: 'sqlite3', database: 'db/foo.sqlite3' })
+            @tenants_source.update_tenant('foo', { adapter: 'sqlite3', database: 'test/files/db/foo.sqlite3' })
           end
 
           @redis_server.hset "#{@prefix_tenant_alias}foo", 'adapter',  'sqlite3'
-          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'db/foo.sqlite3'
-          @tenants_source.update_tenant('foo', { adapter: 'mysql2', database: 'db/bar.sqlite3' })
+          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'test/files/db/foo.sqlite3'
+          @tenants_source.update_tenant('foo', { adapter: 'mysql2', database: 'bar' })
 
           assert_equal @redis_server.hget("#{@prefix_tenant_alias}foo", 'adapter'),  'mysql2'
-          assert_equal @redis_server.hget("#{@prefix_tenant_alias}foo", 'database'), 'db/bar.sqlite3'
+          assert_equal @redis_server.hget("#{@prefix_tenant_alias}foo", 'database'), 'bar'
 
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'adapter'
           @redis_server.hdel "#{@prefix_tenant_alias}foo", 'database'
@@ -85,7 +85,7 @@ module Motel
 
         def test_delete_tenant
           @redis_server.hset "#{@prefix_tenant_alias}foo", 'adapter',  'sqlite3'
-          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'db/foo.sqlite3'
+          @redis_server.hset "#{@prefix_tenant_alias}foo", 'database', 'test/files/db/foo.sqlite3'
 
           @tenants_source.delete_tenant('foo')
 
