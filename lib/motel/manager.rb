@@ -67,12 +67,8 @@ module Motel
     end
 
     def determines_tenant
-      current_tenant ||= begin
-        ENV['TENANT'] || current_tenant || default_tenant
-      end
-
-      raise NoCurrentTenantError unless current_tenant
-      current_tenant
+        ENV['TENANT'] || current_tenant || default_tenant ||
+          (raise NoCurrentTenantError)
     end
 
     private
