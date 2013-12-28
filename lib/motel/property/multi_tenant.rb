@@ -22,7 +22,7 @@ module Motel
           spec = resolver.spec
 
           unless respond_to?(spec.adapter_method)
-            raise AciveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
+            raise ActiveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
           end
 
           connection_handler.establish_connection tenant_name, spec
