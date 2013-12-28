@@ -26,13 +26,10 @@ module Motel
           raise NoExistingTenantError unless tenant?(name)
 
           ActiveRecord::Base.configurations[name] = spec
-          remove_connection_tenant(name)
         end
 
         def delete_tenant(name)
-          if ActiveRecord::Base.configurations.delete(name)
-            remove_connection_tenant(name)
-          end
+          ActiveRecord::Base.configurations.delete(name)
         end
 
       end
