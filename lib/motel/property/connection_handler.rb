@@ -42,14 +42,7 @@ module Motel
 
       def pool_for(tenant_name)
         owner_to_pool.fetch(tenant_name) {
-          if ancestor_pool = pool_from_any_process_for(tenant_name)
-            # A connection was established in an ancestor process that must have
-            # subsequently forked. We can't reuse the connection, but we can copy
-            # the specification and establish a new connection with it.
-            establish_connection tenant_name, ancestor_pool.spec
-          else
-            initialize_connection(tenant_name)
-          end
+          establish_connection tenant_name
         }
       end
 
