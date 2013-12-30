@@ -14,18 +14,7 @@ module Motel
       module ClassMethods
 
         def establish_connection(tenant_name)
-          raise NonexistentTenantError unless motel.tenant?(tenant_name)
-
-          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(
-            motel.tenant(tenant_name), nil
-          )
-          spec = resolver.spec
-
-          unless respond_to?(spec.adapter_method)
-            raise ActiveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
-          end
-
-          connection_handler.establish_connection tenant_name, spec
+          connection_handler.establish_connection tenant_name
         end
 
         def connection_pool

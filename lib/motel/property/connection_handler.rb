@@ -6,9 +6,9 @@ module Motel
 
     class ConnectionHandler < ActiveRecord::ConnectionAdapters::ConnectionHandler
 
-      def establish_connection(tenant_name, spec)
+      def establish_connection(tenant_name, spec = nil)
+        spec ||= connection_especification(tenant_name)
         @class_to_pool.clear
-        raise AnonymousTenantError unless tenant_name
         owner_to_pool[tenant_name] = ActiveRecord::ConnectionAdapters::ConnectionPool.new(spec)
       end
 
