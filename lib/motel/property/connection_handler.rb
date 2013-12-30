@@ -15,8 +15,8 @@ module Motel
       def retrieve_connection(tenant_name)
         pool = retrieve_connection_pool(tenant_name)
 
-        unless (pool && pool.connection)
-          initialize_connection(tenant_name)
+        unless pool.connection
+          establish_connection tenant_name
           pool = retrieve_connection_pool(tenant_name)
         end
 
