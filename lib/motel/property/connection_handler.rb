@@ -57,11 +57,6 @@ module Motel
 
       private
 
-        def initialize_connection(tenant_name)
-          spec = connection_especification(tenant_name)
-          establish_connection tenant_name, spec
-        end
-
         def connection_especification(tenant_name)
           unless ActiveRecord::Base.motel.tenant?(tenant_name)
             raise NonexistentTenantError, "Nonexistent #{tenant_name} tenant"
