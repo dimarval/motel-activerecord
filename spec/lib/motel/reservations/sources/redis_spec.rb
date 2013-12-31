@@ -123,7 +123,7 @@ describe Motel::Reservations::Sources::Redis do
 
       context 'full update' do
 
-        it 'update tenant in teh redis server' do
+        it 'update tenant in the redis server' do
           @tenants_source.update_tenant(
             'foo', {adapter: 'mysql2', database: 'foo'}
           )
@@ -153,7 +153,7 @@ describe Motel::Reservations::Sources::Redis do
 
       it 'raise an error' do
         expect{
-          @tenants_source.update_tenant('baz', {})
+          @tenants_source.update_tenant('baz', BAZ_SPEC)
         }.to raise_error Motel::NonexistentTenantError
       end
 
