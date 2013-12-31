@@ -75,12 +75,12 @@ describe Motel::Reservations::Sources::Default do
 
         it 'add new tenant to ActiveRecord::Base.configurations' do
           @tenants_source.add_tenant(
-            'baz', {'adapter' => 'sqlite3', 'database' => 'tmp/baz.sqlite3'}
+            'baz', {'adapter' => BAZ_SPEC['adapter'], 'database' => BAZ_SPEC['database']}
           )
 
           expect(@config.key?('baz')).to be_true
-          expect(@config['baz']['adapter']).to eq 'sqlite3'
-          expect(@config['baz']['database']).to eq 'tmp/baz.sqlite3'
+          expect(@config['baz']['adapter']).to eq BAZ_SPEC['adapter']
+          expect(@config['baz']['database']).to eq BAZ_SPEC['database']
         end
 
       end
@@ -89,12 +89,12 @@ describe Motel::Reservations::Sources::Default do
 
         it 'add new tenant to ActiveRecord::Base.configurations' do
           @tenants_source.add_tenant(
-            'baz', {adapter: 'sqlite3', database: 'tmp/baz.sqlite3'}
+            'baz', {adapter: BAZ_SPEC['adapter'], database: BAZ_SPEC['database']}
           )
 
           expect(@config.key?('baz')).to be_true
-          expect(@config['baz']['adapter']).to eq 'sqlite3'
-          expect(@config['baz']['database']).to eq 'tmp/baz.sqlite3'
+          expect(@config['baz']['adapter']).to eq BAZ_SPEC['adapter']
+          expect(@config['baz']['database']).to eq BAZ_SPEC['database']
         end
 
       end
@@ -139,7 +139,7 @@ describe Motel::Reservations::Sources::Default do
 
       it 'raise an error' do
         expect{
-          @tenants_source.update_tenant('baz', {})
+          @tenants_source.update_tenant('baz', BAZ_SPEC)
         }.to raise_error Motel::NonexistentTenantError
       end
 
