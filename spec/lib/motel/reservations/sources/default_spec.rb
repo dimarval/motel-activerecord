@@ -20,7 +20,7 @@ describe Motel::Reservations::Sources::Default do
       expect(@tenants_source.tenants.key?('foo')).to be_true
     end
 
-    it 'foo tenant has a correct spec' do
+    it 'tenant foo has a correct spec' do
       expect(@tenants_source.tenants['foo']['adapter']).to eq FOO_SPEC['adapter']
       expect(@tenants_source.tenants['foo']['database']).to eq FOO_SPEC['database']
     end
@@ -29,7 +29,7 @@ describe Motel::Reservations::Sources::Default do
       expect(@tenants_source.tenants.key?('foo')).to be_true
     end
 
-    it 'bar tenant has a correct spec' do
+    it 'tenant bar has a correct spec' do
       expect(@tenants_source.tenants['bar']['adapter']).to eq BAR_SPEC['adapter']
       expect(@tenants_source.tenants['bar']['database']).to eq BAR_SPEC['database']
     end
@@ -38,7 +38,7 @@ describe Motel::Reservations::Sources::Default do
 
   describe '#tenant' do
 
-    it 'foo tenant has a correct spec' do
+    it 'tenant foo has a correct spec' do
       expect(@tenants_source.tenant('foo')['adapter']).to eq FOO_SPEC['adapter']
       expect(@tenants_source.tenant('foo')['database']).to eq FOO_SPEC['database']
     end
@@ -109,7 +109,7 @@ describe Motel::Reservations::Sources::Default do
 
       context 'full update' do
 
-        it 'update tenant to ActiveRecord::Base.configurations' do
+        it 'update tenant from ActiveRecord::Base.configurations' do
           @tenants_source.update_tenant(
             'foo', {adapter: 'mysql2', database: 'foo'}
           )
@@ -122,7 +122,7 @@ describe Motel::Reservations::Sources::Default do
 
       context 'partial update' do
 
-        it 'update tenant to ActiveRecord::Base.configurations' do
+        it 'update tenant from ActiveRecord::Base.configurations' do
           @tenants_source.update_tenant(
             'foo', {adapter: 'mysql2'}
           )
