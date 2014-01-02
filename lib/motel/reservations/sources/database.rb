@@ -4,7 +4,7 @@ module Motel
   module Reservations
     module Sources
 
-      class DataBase < Base
+      class Database < Base
 
         class ConnectionHandler
 
