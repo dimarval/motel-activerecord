@@ -42,7 +42,7 @@ describe Motel::Reservations::Sources::Redis do
     end
 
     it 'exist bar key' do
-      expect(@tenants_source.tenants.key?('foo')).to be_true
+      expect(@tenants_source.tenants.key?('bar')).to be_true
     end
 
     it 'tenant bar has a correct spec' do
