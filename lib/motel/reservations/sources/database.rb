@@ -41,11 +41,11 @@ module Motel
           database: :string
         }
 
-        attr_accessor :source, :table_name
+        attr_accessor :source_spec, :table_name
 
         def initialize(config = {})
-          @source     = config[:source]
-          @table_name = config[:table_name]
+          @source_spec = config[:source_spec]
+          @table_name  = config[:table_name]
         end
 
         def tenants
@@ -155,7 +155,7 @@ module Motel
 
           def spec
             @spec ||= begin
-              resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(source, nil)
+              resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(source_spec, nil)
               resolver.spec
             end
           end

@@ -11,7 +11,7 @@ describe Motel::Reservations::Sources::Database do
 
     @table_name = 'tenant'
     @tenants_source = Motel::Reservations::Sources::Database.new(
-      source: TENANTS_SPEC, table_name: @table_name
+      source_spec: TENANTS_SPEC, table_name: @table_name
     )
 
     @tenant_table_sql = <<-SQL
