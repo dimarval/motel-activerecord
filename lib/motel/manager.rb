@@ -1,4 +1,4 @@
-require 'active_support/core_ext/module/attribute_accessors'
+require 'active_record'
 
 module Motel
 
@@ -9,57 +9,53 @@ module Motel
     mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
     mattr_accessor :current_tenant
-    mattr_accessor :reservations
+    mattr_accessor :tenants_source
 
     def initialize
-      @@disabled_middleware ||= false
-      @@reservations ||= Reservations::Sources::Default.new
+      @tenants_source = Reservations::Sources::Default.new
+      ActiveRecord::Base.connection_handler.source =  @tenants_source
     end
 
-    def source_configurations(source)
-      source_class = "Motel::Reservations::Sources::#{source.to_s.camelize}".constantize
-      source_instance = source_class.new
-
-      yield source_instance if block_given?
-
-      self.reservations = source_instance
+    def tenants_source_configurations(source_type, config)
+      self.tenants_source = Reservations::ReservationSystem.source(source_type, config)
+      ActiveRecord::Base.connection_handler.source = tenants_source
     end
 
     def tenants
-      reservations.tenants
+      tenants_source.tenants
     end
 
     def tenant(name)
-      reservations.tenant(name)
+      tenants_source.tenant(name)
     end
 
     def tenant?(name)
-      active_tenants.include?(name) || reservations.tenant?(name)
+      active_tenants.key?(name) || tenants_source.tenant?(name)
     end
 
     def add_tenant(name, spec, expiration = nil)
-      reservations.add_tenant(name, spec, expiration)
+      tenants_source.add_tenant(name, spec, expiration)
       tenant?(name)
     end
 
     def update_tenant(name, spec, expiration = nil)
-      reservations.update_tenant(name, spec, expiration)
+      tenants_source.update_tenant(name, spec, expiration)
       remove_tenant_connection(name)
       tenant(name)
     end
 
     def delete_tenant(name)
-      reservations.delete_tenant(name)
+      tenants_source.delete_tenant(name)
       remove_tenant_connection(name)
       !tenant?(name)
     end
 
     def create_tenant_table
-      reservations.create_tenant_table
+      tenants_source.create_tenant_table
     end
 
     def destroy_tenant_table
-      reservations.destroy_tenant_table
+      tenants_source.destroy_tenant_table
     end
 
     def active_tenants
@@ -67,8 +63,8 @@ module Motel
     end
 
     def determines_tenant
-        ENV['TENANT'] || current_tenant || default_tenant ||
-          (raise NoCurrentTenantError)
+      ENV['TENANT'] || current_tenant || default_tenant ||
+        (raise NoCurrentTenantError)
     end
 
     private
