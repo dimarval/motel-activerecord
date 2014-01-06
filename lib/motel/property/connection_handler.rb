@@ -6,6 +6,19 @@ module Motel
 
     class ConnectionHandler < ActiveRecord::ConnectionAdapters::ConnectionHandler
 
+      attr_accessor :tenants_source
+
+      def initialize(tenants_source = nil)
+        @owner_to_pool = ThreadSafe::Cache.new(:initial_capacity => 2) do |h,k|
+          h[k] = ThreadSafe::Cache.new(:initial_capacity => 2)
+        end
+        @class_to_pool = ThreadSafe::Cache.new(:initial_capacity => 2) do |h,k|
+          h[k] = ThreadSafe::Cache.new
+        end
+
+        @tenants_source = tenants_source || Reservations::Sources::Default.new
+      end
+
       def establish_connection(tenant_name, spec = nil)
         spec ||= connection_especification(tenant_name)
         @class_to_pool.clear
@@ -58,17 +71,15 @@ module Motel
       private
 
         def connection_especification(tenant_name)
-          unless ActiveRecord::Base.motel.tenant?(tenant_name)
+          unless tenants_source.tenant?(tenant_name)
             raise NonexistentTenantError, "Nonexistent #{tenant_name} tenant"
           end
 
-          resolver =  ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(
-            ActiveRecord::Base.motel.tenant(tenant_name), nil
-          )
-          spec = resolver.spec
+          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new
+          spec = resolver.spec(tenants_source.tenant(tenant_name))
 
-          unless ActiveRecord::Base.respond_to?(spec.adapter_method)
-            raise ActiveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
+          unless respond_to?(spec.adapter_method)
+            raise AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
           end
 
           spec
