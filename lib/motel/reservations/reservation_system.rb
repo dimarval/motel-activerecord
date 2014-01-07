@@ -5,7 +5,7 @@ module Motel
 
     class ReservationSystem
 
-      def self.source(source_type, config)
+      def self.source(source_type, config = nil)
         source_class = "Motel::Reservations::Sources::#{source_type.to_s.camelize}".constantize
 
         source_instance = source_class.new(config)
