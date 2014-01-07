@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/dimarval/motel'
   s.license     = 'MIT' 
 
-  s.add_dependency 'activerecord', '>= 3.0', '<= 5.0'
+  s.add_dependency 'activerecord', '~> 4.0.1'
   s.add_dependency 'activesupport'
   s.add_dependency 'redis'
 
