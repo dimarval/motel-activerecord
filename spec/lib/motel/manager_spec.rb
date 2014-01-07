@@ -19,6 +19,10 @@ describe Motel::Manager do
       @tenants_source.delete_tenant(tenant)
     end
 
+    ENV['TENANT'] = nil
+    @manager.current_tenant = nil
+    @manager.default_tenant = nil
+
     ActiveRecord::Base.connection_handler.active_tenants do |tenant|
       ActiveRecord::Base.connection_handler.remove_connection(tenant)
     end
