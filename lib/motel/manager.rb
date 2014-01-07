@@ -1,3 +1,4 @@
+require 'active_support/core_ext/module/attribute_accessors'
 require 'active_record'
 
 module Motel
@@ -12,13 +13,15 @@ module Motel
     mattr_accessor :tenants_source
 
     def initialize
+      ActiveRecord::Base.connection_handler = Property::ConnectionHandler.new
       @tenants_source = Reservations::Sources::Default.new
-      ActiveRecord::Base.connection_handler.source =  @tenants_source
+
+      ActiveRecord::Base.connection_handler.tenants_source =  @tenants_source
     end
 
     def tenants_source_configurations(source_type, config)
       self.tenants_source = Reservations::ReservationSystem.source(source_type, config)
-      ActiveRecord::Base.connection_handler.source = tenants_source
+      ActiveRecord::Base.connection_handler.tenants_source = tenants_source
     end
 
     def tenants
