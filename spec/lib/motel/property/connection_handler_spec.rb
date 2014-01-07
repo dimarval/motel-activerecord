@@ -8,6 +8,11 @@ describe Motel::Property::ConnectionHandler do
     @tenants_source.add_tenant('bar', BAR_SPEC)
   end
 
+  after(:all) do
+    @tenants_source.delete_tenant('foo')
+    @tenants_source.delete_tenant('bar')
+  end
+
   before(:each) do
     @handler = Motel::Property::ConnectionHandler.new(@tenants_source)
   end
