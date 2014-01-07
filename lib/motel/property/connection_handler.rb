@@ -53,6 +53,11 @@ module Motel
         end
       end
 
+      def connected?(tenant_name)
+        conn = retrieve_connection_pool(tenant_name)
+        conn && conn.connected?
+      end
+
       def pool_for(tenant_name)
         owner_to_pool.fetch(tenant_name) {
           establish_connection tenant_name

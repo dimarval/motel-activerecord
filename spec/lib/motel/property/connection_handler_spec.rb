@@ -6,7 +6,6 @@ describe Motel::Property::ConnectionHandler do
     @tenants_source = Motel::Reservations::Sources::Default.new
     @tenants_source.add_tenant('foo', FOO_SPEC)
     @tenants_source.add_tenant('bar', BAR_SPEC)
-
   end
 
   before(:each) do
@@ -104,6 +103,19 @@ describe Motel::Property::ConnectionHandler do
         }.to raise_error Motel::NonexistentTenantError
       end
 
+    end
+
+  end
+
+  describe '#connected?' do
+
+    it 'returns true' do
+      @handler.retrieve_connection('foo')
+      expect(@handler.connected?('foo')).to be_true
+    end
+
+    it 'returns false' do
+      expect(@handler.connected?('foo')).to be_false
     end
 
   end
