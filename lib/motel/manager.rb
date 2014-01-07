@@ -13,13 +13,10 @@ module Motel
     mattr_accessor :tenants_source
 
     def initialize
-      ActiveRecord::Base.connection_handler = Property::ConnectionHandler.new
-      @tenants_source = Reservations::Sources::Default.new
-
-      ActiveRecord::Base.connection_handler.tenants_source =  @tenants_source
+      @@tenants_source ||= ActiveRecord::Base.connection_handler.tenants_source
     end
 
-    def tenants_source_configurations(source_type, config)
+    def tenants_source_configurations(source_type, config = nil)
       self.tenants_source = Reservations::ReservationSystem.source(source_type, config)
       ActiveRecord::Base.connection_handler.tenants_source = tenants_source
     end
@@ -33,7 +30,7 @@ module Motel
     end
 
     def tenant?(name)
-      active_tenants.key?(name) || tenants_source.tenant?(name)
+      active_tenants.include?(name) || tenants_source.tenant?(name)
     end
 
     def add_tenant(name, spec, expiration = nil)
@@ -66,8 +63,7 @@ module Motel
     end
 
     def determines_tenant
-      ENV['TENANT'] || current_tenant || default_tenant ||
-        (raise NoCurrentTenantError)
+      ENV['TENANT'] || current_tenant || default_tenant
     end
 
     private
