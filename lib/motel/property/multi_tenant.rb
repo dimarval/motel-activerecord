@@ -6,9 +6,8 @@ module Motel
       included do
 
         mattr_accessor :motel, instance_writer: false
-        self.motel = Manager.new
         self.default_connection_handler = Property::ConnectionHandler.new
-
+        self.motel = Manager.new
       end
 
       module ClassMethods
@@ -18,23 +17,27 @@ module Motel
         end
 
         def connection_pool
-          connection_handler.retrieve_connection_pool(motel.determines_tenant)
+          connection_handler.retrieve_connection_pool(current_tenant)
         end
 
         def retrieve_connection
-          connection_handler.retrieve_connection(motel.determines_tenant)
+          connection_handler.retrieve_connection(current_tenant)
         end
 
         def connected?
-          connection_handler.connected?(motel.determines_tenant)
+          connection_handler.connected?(current_tenant)
         end
 
-        def remove_connection(tenant_name = motel.determines_tenant)
+        def remove_connection(tenant_name = current_tenant)
           connection_handler.remove_connection(tenant_name)
         end
 
         def arel_engine
           ActiveRecord::Base
+        end
+
+        def current_tenant
+          motel.determines_tenant or raise Motel::NoCurrentTenantError
         end
 
       end
