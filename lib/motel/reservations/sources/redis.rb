@@ -9,7 +9,7 @@ module Motel
         attr_accessor :host, :port, :password, :path, :prefix_tenant_alias
 
         def initialize(config = {})
-          @hots                = config[:host]
+          @host                = config[:host]
           @port                = config[:port]
           @password            = config[:password]
           @path                = config[:path]
