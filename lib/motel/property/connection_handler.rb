@@ -75,11 +75,13 @@ module Motel
             raise NonexistentTenantError, "Nonexistent #{tenant_name} tenant"
           end
 
-          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new
-          spec = resolver.spec(tenants_source.tenant(tenant_name))
+          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(
+            tenants_source.tenant(tenant_name), nil
+          )
+          spec = resolver.spec
 
-          unless respond_to?(spec.adapter_method)
-            raise AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
+          unless ActiveRecord::Base.respond_to?(spec.adapter_method)
+            raise ActiveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
           end
 
           spec
