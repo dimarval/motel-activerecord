@@ -18,8 +18,9 @@ module Motel
           ActiveRecord::Base.motel.current_tenant = name
           @app.call(env)
         else
-          file = File.expand_path(ActiveRecord::Base.motel.nonexistent_tenant_page)
-          body = File.exists?(file) ? File.read(file) : "No exising tenant"
+          path = ActiveRecord::Base.motel.nonexistent_tenant_page
+          file = File.expand_path(path) if path
+          body = (File.exists?(file.to_s)) ? File.read(file) : "No exising tenant"
           [404, {"Content-Type" => "text/html", "Content-Length" => body.size.to_s}, [body]]
         end
       else
