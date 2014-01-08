@@ -34,22 +34,20 @@ module Motel
           !tenant(name).nil?
         end
 
-        def add_tenant(name, spec, expiration = nil)
+        def add_tenant(name, spec)
           raise ExistingTenantError if tenant?(name)
 
           spec.each do |field, value|
             redis.hset(tenant_alias(name), field, value)
           end
-          tenant_expiration(name) if expiration
         end
 
-        def update_tenant(name, spec, expiration = nil)
+        def update_tenant(name, spec)
           raise NonexistentTenantError unless tenant?(name)
 
           spec.each do |field, value|
             redis.hset(tenant_alias(name), field, value)
           end
-          tenant_expiration(name) if expiration
         end
 
         def delete_tenant(name)
@@ -57,12 +55,6 @@ module Motel
             fields = redis.hkeys tenant_alias(name)
             redis.hdel(tenant_alias(name), [*fields])
           end
-        end
-
-        def tenant_expiration(name, expiration)
-          raise NonexistentTenantError unless tenant?(name)
-
-          redis.expire(tenant_alias(name), (expiration - Time.zone.now).to_i)
         end
 
         private

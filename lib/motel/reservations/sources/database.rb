@@ -48,7 +48,7 @@ module Motel
           tenants.key?(name)
         end
 
-        def add_tenant(name, spec, expiration= nil)
+        def add_tenant(name, spec)
           raise ExistingTenantError if tenant?(name)
 
           spec = spec.merge(:name => name.to_s)
@@ -62,7 +62,7 @@ module Motel
           connection_pool.with_connection { |conn| conn.execute(sql) }
         end
 
-        def update_tenant(name, spec, expiration= nil)
+        def update_tenant(name, spec)
           raise NonexistentTenantError unless tenant?(name)
 
           spec = spec.merge(:name => name.to_s)

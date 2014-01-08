@@ -32,13 +32,13 @@ module Motel
       active_tenants.include?(name) || tenants_source.tenant?(name)
     end
 
-    def add_tenant(name, spec, expiration = nil)
-      tenants_source.add_tenant(name, spec, expiration)
+    def add_tenant(name, spec)
+      tenants_source.add_tenant(name, spec)
       tenant?(name)
     end
 
-    def update_tenant(name, spec, expiration = nil)
-      tenants_source.update_tenant(name, spec, expiration)
+    def update_tenant(name, spec)
+      tenants_source.update_tenant(name, spec)
       remove_tenant_connection(name)
       tenant(name)
     end

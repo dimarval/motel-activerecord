@@ -18,13 +18,13 @@ module Motel
           ActiveRecord::Base.configurations.key?(name)
         end
 
-        def add_tenant(name, spec, expiration = nil)
+        def add_tenant(name, spec)
           raise ExistingTenantError if tenant?(name)
 
           ActiveRecord::Base.configurations[name] = keys_to_string(spec)
         end
 
-        def update_tenant(name, spec, expiration =  nil)
+        def update_tenant(name, spec)
           raise NonexistentTenantError unless tenant?(name)
 
           spec = keys_to_string(spec)
