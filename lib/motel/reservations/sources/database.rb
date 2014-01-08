@@ -4,7 +4,7 @@ module Motel
   module Reservations
     module Sources
 
-      class Database < Base
+      class Database
 
         COLUMNS = {
           name:   :string,
@@ -117,7 +117,7 @@ module Motel
         private
 
           def table
-            @table ||= Arel::Table.new(table_name, self )
+            @table ||= Arel::Table.new(table_name, self)
           end
 
           def columns

@@ -1,8 +1,10 @@
+require 'active_record'
+
 module Motel
   module Reservations
     module Sources
 
-      class Default < Base
+      class Default
 
         def tenants
           ActiveRecord::Base.configurations

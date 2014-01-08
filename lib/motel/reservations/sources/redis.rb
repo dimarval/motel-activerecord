@@ -4,7 +4,7 @@ module Motel
   module Reservations
     module Sources
 
-      class Redis < Base
+      class Redis
 
         attr_accessor :host, :port, :password, :path, :prefix_tenant_alias
 
