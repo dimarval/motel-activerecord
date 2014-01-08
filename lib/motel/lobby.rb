@@ -20,7 +20,7 @@ module Motel
         else
           path = ActiveRecord::Base.motel.nonexistent_tenant_page
           file = File.expand_path(path) if path
-          body = (File.exists?(file.to_s)) ? File.read(file) : "No exising tenant"
+          body = (File.exists?(file.to_s)) ? File.read(file) : "Nonexistent #{name} tenant"
           [404, {"Content-Type" => "text/html", "Content-Length" => body.size.to_s}, [body]]
         end
       else
@@ -32,9 +32,9 @@ module Motel
     private
 
       def tenant_name(request)
-        admission_criteria = ActiveRecord::Base.motel.admission_criteria
-        if admission_criteria
-          name = request.host.match(admission_criteria)
+        if ActiveRecord::Base.motel.admission_criteria
+          regex = Regexp.new(ActiveRecord::Base.motel.admission_criteria)
+          name = request.path.match(regex)
           name[1] if name
         else
          request.host.split('.').first
