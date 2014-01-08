@@ -6,29 +6,6 @@ module Motel
 
       class Database < Base
 
-        class ConnectionHandler
-
-          attr_accessor :connection_handler, :spec
-
-          def initialize(spec)
-            @spec = spec
-            @connection_handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
-          end
-
-          def establish_connection
-            connection_handler.establish_connection self.class, spec
-          end
-
-          def connection
-            connection_handler.retrieve_connection(self.class)
-          end
-
-          def connection_pool
-            connection_handler.retrieve_connection_pool(self.class)
-          end
-
-        end
-
         COLUMNS = {
           name:   :string,
           adapter:  :string,
@@ -82,7 +59,7 @@ module Motel
             VALUES (#{spec.values.map(&:inspect).join(',')})
           SQL
 
-          connection_handler.connection_pool.with_connection { |conn| conn.execute(sql) }
+          connection_pool.with_connection { |conn| conn.execute(sql) }
         end
 
         def update_tenant(name, spec, expiration= nil)
@@ -97,7 +74,7 @@ module Motel
             WHERE name = "#{name}"
           SQL
 
-          connection_handler.connection_pool.with_connection { |conn| conn.execute(sql) }
+          connection_pool.with_connection { |conn| conn.execute(sql) }
         end
 
         def delete_tenant(name)
@@ -106,12 +83,12 @@ module Motel
               DELETE FROM #{table_name} WHERE name = "#{name}"
             SQL
 
-            connection_handler.connection_pool.with_connection { |conn| conn.execute(sql) }
+            connection_pool.with_connection { |conn| conn.execute(sql) }
           end
         end
 
         def create_tenant_table
-          connection_handler.connection_pool.with_connection do |conn|
+          connection_pool.with_connection do |conn|
             unless conn.table_exists?(table_name)
               conn.create_table(table_name, :id => false) do |t|
                 COLUMNS.each do |name, data_type|
@@ -121,22 +98,26 @@ module Motel
               conn.add_index table_name, :name, :unique => true
             end
           end
-          connection_handler.connection.table_exists?(table_name)
+          connection.table_exists?(table_name)
         end
 
         def destroy_tenant_table
-          connection_handler.connection_pool.with_connection do |conn|
+          connection_pool.with_connection do |conn|
             if conn.table_exists?(table_name)
               conn.drop_table(table_name)
             end
           end
-          !connection_handler.connection.table_exists?(table_name)
+          !connection.table_exists?(table_name)
+        end
+
+        def connection
+          connection_pool.connection
         end
 
         private
 
           def table
-            @table ||= Arel::Table.new(table_name, connection_handler)
+            @table ||= Arel::Table.new(table_name, self )
           end
 
           def columns
@@ -148,7 +129,7 @@ module Motel
           end
 
           def query_result
-            connection_handler.connection_pool.with_connection do |conn|
+            connection_pool.with_connection do |conn|
               conn.select_all(query.to_sql)
             end
           end
@@ -162,10 +143,14 @@ module Motel
 
           def connection_handler
             @connection_handler ||= begin
-              handler = ConnectionHandler.new(spec)
-              handler.establish_connection
+              handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
+              handler.establish_connection self.class, spec
               handler
             end
+          end
+
+          def connection_pool
+            connection_handler.retrieve_connection_pool self.class
           end
 
       end
