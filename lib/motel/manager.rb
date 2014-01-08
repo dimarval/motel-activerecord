@@ -5,7 +5,6 @@ module Motel
 
   class Manager
 
-    mattr_accessor :disable_middleware
     mattr_accessor :nonexistent_tenant_page
     mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
@@ -16,7 +15,7 @@ module Motel
       @@tenants_source ||= ActiveRecord::Base.connection_handler.tenants_source
     end
 
-    def tenants_source_configurations(source_type, config = nil)
+    def tenants_source_configurations(source_type, config = {})
       self.tenants_source = Reservations::ReservationSystem.source(source_type, config)
       ActiveRecord::Base.connection_handler.tenants_source = tenants_source
     end
