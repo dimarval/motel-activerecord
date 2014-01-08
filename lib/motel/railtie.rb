@@ -1,10 +1,12 @@
-require 'rails'
+require 'active_support/ordered_options'
 require 'motel/manager'
+require 'rails'
 
 module Motel
 
   class Railtie < Rails::Railtie
-    config.motel = Manager.new
+    config.motel = ActiveSupport::OrderedOptions.new
+    config.disable_motel_middleware = false
 
     rake_tasks do
       namespace :db do
@@ -17,13 +19,23 @@ module Motel
     end
 
     initializer "motel.general_configuration" do
-      unless ActiveRecord::Base.motel.nonexistent_tenant_page
-        ActiveRecord::Base.motel.nonexistent_tenant_page = 'public/404.html'
+      ActiveRecord::Base.motel.nonexistent_tenant_page ||= begin
+        config.motel.nonexistent_tenant_page || 'public/404.html'
+      end
+      ActiveRecord::Base.motel.default_tenant = Rails.application.config.motel.default_tenant
+      ActiveRecord::Base.motel.current_tenant = Rails.application.config.motel.current_tenant
+      ActiveRecord::Base.motel.admission_criteria = Rails.application.config.motel.admission_criteria
+
+      source_configurations = Rails.application.config.motel.tenants_source_configurations
+      if source_configurations
+        source_type = source_configurations.delete(:source)
+        ActiveRecord::Base.motel.tenants_source_configurations(source_type, source_configurations[:config])
       end
     end
 
     initializer "motel.configure_middleware" do |app|
-      unless ActiveRecord::Base.motel.disable_middleware
+      disable_middleware = Rails.application.config.disable_motel_middleware || false
+      unless disable_middleware
         app.config.middleware.insert_before ActiveRecord::Migration::CheckPending, Lobby
       end
     end
