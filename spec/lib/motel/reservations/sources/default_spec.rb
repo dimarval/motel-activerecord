@@ -38,9 +38,21 @@ describe Motel::Reservations::Sources::Default do
 
   describe '#tenant' do
 
-    it 'tenant foo has a correct spec' do
-      expect(@tenants_source.tenant('foo')['adapter']).to eq FOO_SPEC['adapter']
-      expect(@tenants_source.tenant('foo')['database']).to eq FOO_SPEC['database']
+    context 'existing tenant' do
+
+      it 'tenant foo has a correct spec' do
+        expect(@tenants_source.tenant('foo')['adapter']).to eq FOO_SPEC['adapter']
+        expect(@tenants_source.tenant('foo')['database']).to eq FOO_SPEC['database']
+      end
+
+    end
+
+    context 'nonexistent tenant' do
+
+      it 'returns null' do
+        expect(@tenants_source.tenant('baz')).to be_nil
+      end
+
     end
 
   end
