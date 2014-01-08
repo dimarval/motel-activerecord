@@ -4,19 +4,14 @@ describe Motel::Manager do
 
   before(:each) do
     @manager = Motel::Manager.new
-    @tenants_source = @manager.tenants_source
-    @tenants_source.add_tenant('foo', FOO_SPEC)
-    @tenants_source.add_tenant('bar', BAR_SPEC)
-
-    # FIXME hay discrepancia de fuentes de inquilinos al asignarsela por fuera
-    # de la clase manager
-    ActiveRecord::Base.connection_handler.tenants_source = @tenants_source
+    @manager.tenants_source.add_tenant('foo', FOO_SPEC)
+    @manager.tenants_source.add_tenant('bar', BAR_SPEC)
   end
 
   after(:each) do
-    @manager.tenants_source = @tenants_source
-    @tenants_source.tenants.keys.each do |tenant|
-      @tenants_source.delete_tenant(tenant)
+    Motel::Reservations::ReservationSystem.source = Motel::Reservations::Sources::Default.new
+    @manager.tenants_source.tenants.keys.each do |tenant|
+      @manager.tenants_source.delete_tenant(tenant)
     end
 
     ENV['TENANT'] = nil
@@ -35,7 +30,7 @@ describe Motel::Manager do
       it 'tenants_source in connecion_handler of active record is an instance of redis' do
         @manager.tenants_source_configurations(:redis, {hots: 'localhost', port: 6379})
         expect(
-          ActiveRecord::Base.connection_handler.tenants_source
+          Motel::Reservations::ReservationSystem.source
         ).to be_an_instance_of Motel::Reservations::Sources::Redis
       end
 
@@ -46,7 +41,7 @@ describe Motel::Manager do
       it 'tenants_source in connecion_handler of active record is an instance of database' do
         @manager.tenants_source_configurations(:database, {spec: TENANTS_SPEC, table_name: 'tenant'})
         expect(
-          ActiveRecord::Base.connection_handler.tenants_source
+          Motel::Reservations::ReservationSystem.source
         ).to be_an_instance_of Motel::Reservations::Sources::Database
       end
 
@@ -101,7 +96,7 @@ describe Motel::Manager do
     it 'adds new tenant' do
       @manager.add_tenant('baz', BAZ_SPEC)
 
-      expect(@tenants_source.tenant?('baz')).to be_true
+      expect(@manager.tenants_source.tenant?('baz')).to be_true
     end
 
   end
@@ -111,8 +106,8 @@ describe Motel::Manager do
     it 'updates tenant' do
       @manager.update_tenant('foo', {adapter: 'mysql2', database: 'foo'})
 
-      expect(@tenants_source.tenant('foo')['adapter']).to  eq 'mysql2'
-      expect(@tenants_source.tenant('foo')['database']).to eq 'foo'
+      expect(@manager.tenants_source.tenant('foo')['adapter']).to  eq 'mysql2'
+      expect(@manager.tenants_source.tenant('foo')['database']).to eq 'foo'
     end
 
     it 'returns the spec unpdated' do
@@ -133,7 +128,7 @@ describe Motel::Manager do
 
     it 'deletes tenant' do
       @manager.delete_tenant('foo')
-      expect(@tenants_source.tenant?('foo')).to be_false
+      expect(@manager.tenants_source.tenant?('foo')).to be_false
     end
 
     it 'removes connection of tenant' do
@@ -149,7 +144,7 @@ describe Motel::Manager do
   describe '#create_tenant_table' do
 
     it 'creates tenant table' do
-      @manager.tenants_source = Motel::Reservations::ReservationSystem.source(
+      Motel::Reservations::ReservationSystem.source_configurations(
         :database, {source_spec: TENANTS_SPEC, table_name: 'tenant'}
       )
       expect(@manager.create_tenant_table).to be_true
@@ -163,7 +158,7 @@ describe Motel::Manager do
   describe '#destroy_tenant_table' do
 
     it 'returns true' do
-      @manager.tenants_source = Motel::Reservations::ReservationSystem.source(
+      Motel::Reservations::ReservationSystem.source_configurations(
         :database, {source_spec: TENANTS_SPEC, table_name: 'tenant'}
       )
 

@@ -9,15 +9,9 @@ module Motel
     mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
     mattr_accessor :current_tenant
-    mattr_accessor :tenants_source
-
-    def initialize
-      @@tenants_source ||= ActiveRecord::Base.connection_handler.tenants_source
-    end
 
     def tenants_source_configurations(source_type, config = {})
-      self.tenants_source = Reservations::ReservationSystem.source(source_type, config)
-      ActiveRecord::Base.connection_handler.tenants_source = tenants_source
+      Motel::Reservations::ReservationSystem.source_configurations(source_type, config)
     end
 
     def tenants
@@ -63,6 +57,10 @@ module Motel
 
     def determines_tenant
       ENV['TENANT'] || current_tenant || default_tenant
+    end
+
+    def tenants_source
+      Motel::Reservations::ReservationSystem.source
     end
 
     private
