@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Motel::Property::ConnectionHandler do
+describe Motel::ConnectionAdapters::ConnectionHandler do
 
   before(:all) do
     @tenants_source = Motel::Reservations::Sources::Default.new
@@ -14,7 +14,7 @@ describe Motel::Property::ConnectionHandler do
   end
 
   before(:each) do
-    @handler = Motel::Property::ConnectionHandler.new(@tenants_source)
+    @handler = Motel::ConnectionAdapters::ConnectionHandler.new(@tenants_source)
   end
 
   describe '#establish_connection' do

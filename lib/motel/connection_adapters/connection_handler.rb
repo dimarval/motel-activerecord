@@ -1,8 +1,7 @@
 require 'active_record'
 
 module Motel
-
-  module Property
+  module ConnectionAdapters
 
     class ConnectionHandler < ActiveRecord::ConnectionAdapters::ConnectionHandler
 
@@ -95,6 +94,5 @@ module Motel
     end
 
   end
-
 end
 

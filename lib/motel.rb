@@ -1,4 +1,4 @@
-require 'motel/property'
+require 'motel/connection_adapters'
 require 'motel/lobby'
 require 'motel/manager'
 require 'motel/reservations'
