@@ -3,7 +3,7 @@ require 'active_support/core_ext/string/inflections'
 module Motel
   module Reservations
 
-    class ReservationSystem
+    module ReservationSystem
 
       def self.source=(source)
         @@source = source
