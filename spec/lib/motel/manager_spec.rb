@@ -9,7 +9,7 @@ describe Motel::Manager do
   end
 
   after(:each) do
-    Motel::Reservations::ReservationSystem.source = Motel::Reservations::Sources::Default.new
+    Motel::ReservationSystem.source = Motel::Reservations::Sources::Default.new
     @manager.tenants_source.tenants.keys.each do |tenant|
       @manager.tenants_source.delete_tenant(tenant)
     end
@@ -30,7 +30,7 @@ describe Motel::Manager do
       it 'tenants_source in connecion_handler of active record is an instance of redis' do
         @manager.tenants_source_configurations(:redis, {hots: 'localhost', port: 6379})
         expect(
-          Motel::Reservations::ReservationSystem.source
+          Motel::ReservationSystem.source
         ).to be_an_instance_of Motel::Reservations::Sources::Redis
       end
 
@@ -41,7 +41,7 @@ describe Motel::Manager do
       it 'tenants_source in connecion_handler of active record is an instance of database' do
         @manager.tenants_source_configurations(:database, {spec: TENANTS_SPEC, table_name: 'tenant'})
         expect(
-          Motel::Reservations::ReservationSystem.source
+          Motel::ReservationSystem.source
         ).to be_an_instance_of Motel::Reservations::Sources::Database
       end
 
@@ -144,7 +144,7 @@ describe Motel::Manager do
   describe '#create_tenant_table' do
 
     it 'creates tenant table' do
-      Motel::Reservations::ReservationSystem.source_configurations(
+      Motel::ReservationSystem.source_configurations(
         :database, {source_spec: TENANTS_SPEC, table_name: 'tenant'}
       )
       expect(@manager.create_tenant_table).to be_true
@@ -158,7 +158,7 @@ describe Motel::Manager do
   describe '#destroy_tenant_table' do
 
     it 'returns true' do
-      Motel::Reservations::ReservationSystem.source_configurations(
+      Motel::ReservationSystem.source_configurations(
         :database, {source_spec: TENANTS_SPEC, table_name: 'tenant'}
       )
 

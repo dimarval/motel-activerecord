@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe Motel::Reservations::ReservationSystem do
+describe Motel::ReservationSystem do
 
   before(:all) do
-    @reservation_system = Motel::Reservations::ReservationSystem
+    @reservation_system = Motel::ReservationSystem
   end
 
   after(:all) do
-    Motel::Reservations::ReservationSystem.source = nil #sets default source
+    Motel::ReservationSystem.source = nil #sets default source
   end
 
   describe '#source_configurations' do

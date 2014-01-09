@@ -90,7 +90,7 @@ module Motel
         end
 
         def tenants_source
-          Motel::Reservations::ReservationSystem.source
+          Motel::ReservationSystem.source
         end
 
     end

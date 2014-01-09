@@ -11,7 +11,7 @@ module Motel
     mattr_accessor :current_tenant
 
     def tenants_source_configurations(source_type, config = {})
-      Motel::Reservations::ReservationSystem.source_configurations(source_type, config)
+      Motel::ReservationSystem.source_configurations(source_type, config)
     end
 
     def tenants
@@ -60,7 +60,7 @@ module Motel
     end
 
     def tenants_source
-      Motel::Reservations::ReservationSystem.source
+      Motel::ReservationSystem.source
     end
 
     private
