@@ -8,11 +8,11 @@ module Motel
     end
 
     def self.source
-      @@source ||= Reservations::Sources::Default.new
+      @@source ||= Sources::Default.new
     end
 
     def self.source_configurations(source_type, config = {})
-      source_class = "Motel::Reservations::Sources::#{source_type.to_s.camelize}".constantize
+      source_class = "Motel::Sources::#{source_type.to_s.camelize}".constantize
 
       source_instance = source_class.new(config)
 

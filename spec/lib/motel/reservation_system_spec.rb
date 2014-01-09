@@ -25,7 +25,7 @@ describe Motel::ReservationSystem do
       end
 
       it 'places a redis instance on the source' do
-        expect(@reservation_system.source).to be_an_instance_of Motel::Reservations::Sources::Redis
+        expect(@reservation_system.source).to be_an_instance_of Motel::Sources::Redis
       end
 
       it 'source attributes has a correct values' do
@@ -48,7 +48,7 @@ describe Motel::ReservationSystem do
       end
 
       it 'places a database instance on the source' do
-        expect(@reservation_system.source).to be_an_instance_of Motel::Reservations::Sources::Database
+        expect(@reservation_system.source).to be_an_instance_of Motel::Sources::Database
       end
 
       it 'source attributes has a correct values' do

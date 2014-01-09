@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe Motel::Reservations::Sources::Redis do
+describe Motel::Sources::Redis do
 
   before(:all) do
     @redis_server = ::Redis.new
     @prefix_tenant_alias = 'test-tenant:'
-    @tenants_source = Motel::Reservations::Sources::Redis.new(
+    @tenants_source = Motel::Sources::Redis.new(
       prefix_tenant_alias: @prefix_tenant_alias
     )
   end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Motel::Reservations::Sources::Database do
+describe Motel::Sources::Database do
 
   before(:all) do
     @klass = Class.new(ActiveRecord::Base) { def self.name; 'klass'; end }
@@ -10,7 +10,7 @@ describe Motel::Reservations::Sources::Database do
     @handler.establish_connection(@klass, resolver.spec)
 
     @table_name = 'tenant'
-    @tenants_source = Motel::Reservations::Sources::Database.new(
+    @tenants_source = Motel::Sources::Database.new(
       source_spec: TENANTS_SPEC, table_name: @table_name
     )
 

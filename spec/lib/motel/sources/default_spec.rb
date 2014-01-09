@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Motel::Reservations::Sources::Default do
+describe Motel::Sources::Default do
 
   before(:all) do
-    @tenants_source = Motel::Reservations::Sources::Default.new
+    @tenants_source = Motel::Sources::Default.new
   end
 
   before(:each) do

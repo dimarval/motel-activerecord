@@ -9,7 +9,7 @@ describe Motel::Manager do
   end
 
   after(:each) do
-    Motel::ReservationSystem.source = Motel::Reservations::Sources::Default.new
+    Motel::ReservationSystem.source = Motel::Sources::Default.new
     @manager.tenants_source.tenants.keys.each do |tenant|
       @manager.tenants_source.delete_tenant(tenant)
     end
@@ -31,7 +31,7 @@ describe Motel::Manager do
         @manager.tenants_source_configurations(:redis, {hots: 'localhost', port: 6379})
         expect(
           Motel::ReservationSystem.source
-        ).to be_an_instance_of Motel::Reservations::Sources::Redis
+        ).to be_an_instance_of Motel::Sources::Redis
       end
 
     end
@@ -42,7 +42,7 @@ describe Motel::Manager do
         @manager.tenants_source_configurations(:database, {spec: TENANTS_SPEC, table_name: 'tenant'})
         expect(
           Motel::ReservationSystem.source
-        ).to be_an_instance_of Motel::Reservations::Sources::Database
+        ).to be_an_instance_of Motel::Sources::Database
       end
 
     end
