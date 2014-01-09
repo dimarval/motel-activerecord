@@ -28,8 +28,7 @@ module Motel
 
       source_configurations = Rails.application.config.motel.tenants_source_configurations
       if source_configurations
-        source_type = source_configurations.delete(:source)
-        ActiveRecord::Base.motel.tenants_source_configurations(source_type, source_configurations[:config])
+        ActiveRecord::Base.motel.tenants_source_configurations(source_configurations)
       end
     end
 
