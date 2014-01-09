@@ -15,7 +15,8 @@ describe Motel::ReservationSystem do
     context 'redis source' do
 
       before(:all) do
-        @reservation_system.source_configurations(:redis, {
+        @reservation_system.source_configurations({
+          source:              :redis,
           host:                'localhost',
           port:                6380,
           password:            'none',
@@ -41,7 +42,8 @@ describe Motel::ReservationSystem do
     context 'database source' do
 
       before(:all) do
-        @reservation_system.source_configurations(:database, {
+        @reservation_system.source_configurations({
+          source:      :database,
           source_spec: TENANTS_SPEC,
           table_name:  'tenant'
         })

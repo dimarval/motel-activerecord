@@ -10,8 +10,8 @@ module Motel
     mattr_accessor :default_tenant
     mattr_accessor :current_tenant
 
-    def tenants_source_configurations(source_type, config = {})
-      Motel::ReservationSystem.source_configurations(source_type, config)
+    def tenants_source_configurations(config)
+      Motel::ReservationSystem.source_configurations(config)
     end
 
     def tenants

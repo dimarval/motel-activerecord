@@ -28,7 +28,12 @@ describe Motel::Manager do
     context 'redis source' do
 
       it 'tenants_source in connecion_handler of active record is an instance of redis' do
-        @manager.tenants_source_configurations(:redis, {hots: 'localhost', port: 6379})
+        @manager.tenants_source_configurations({
+          source: :redis,
+          hots:   'localhost',
+          port:   6379
+        })
+
         expect(
           Motel::ReservationSystem.source
         ).to be_an_instance_of Motel::Sources::Redis
@@ -39,7 +44,12 @@ describe Motel::Manager do
     context 'database source' do
 
       it 'tenants_source in connecion_handler of active record is an instance of database' do
-        @manager.tenants_source_configurations(:database, {spec: TENANTS_SPEC, table_name: 'tenant'})
+        @manager.tenants_source_configurations({
+          source:      :database,
+          spec:        TENANTS_SPEC,
+          table_name: 'tenant'
+        })
+
         expect(
           Motel::ReservationSystem.source
         ).to be_an_instance_of Motel::Sources::Database
@@ -144,9 +154,12 @@ describe Motel::Manager do
   describe '#create_tenant_table' do
 
     it 'creates tenant table' do
-      Motel::ReservationSystem.source_configurations(
-        :database, {source_spec: TENANTS_SPEC, table_name: 'tenant'}
-      )
+      Motel::ReservationSystem.source_configurations({
+        source:      :database,
+        source_spec: TENANTS_SPEC,
+        table_name:  'tenant'
+      })
+
       expect(@manager.create_tenant_table).to be_true
       expect(@manager.tenants_source.add_tenant('foo', FOO_SPEC)).to be_true
 
@@ -158,11 +171,13 @@ describe Motel::Manager do
   describe '#destroy_tenant_table' do
 
     it 'returns true' do
-      Motel::ReservationSystem.source_configurations(
-        :database, {source_spec: TENANTS_SPEC, table_name: 'tenant'}
-      )
-
+      Motel::ReservationSystem.source_configurations({
+        source:      :database,
+        source_spec: TENANTS_SPEC,
+        table_name:  'tenant'
+      })
       @manager.tenants_source.create_tenant_table
+
       expect(@manager.destroy_tenant_table).to be_true
       expect{@manager.tenants_source.add_tenant('foo', FOO_SPEC)}.to raise_error
     end
