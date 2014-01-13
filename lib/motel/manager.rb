@@ -5,13 +5,20 @@ module Motel
 
   class Manager
 
-    mattr_accessor :nonexistent_tenant_page
-    mattr_accessor :admission_criteria
-    mattr_accessor :default_tenant
-    mattr_accessor :current_tenant
+    attr_accessor :nonexistent_tenant_page
+    attr_accessor :admission_criteria
+    attr_accessor :default_tenant
+    attr_accessor :current_tenant
+    attr_accessor :reservation_system
+
+    def initialize
+      @reservation_system = ReservationSystem.new
+      ActiveRecord::Base.connection_handler.tenants_source = @reservation_system.source
+    end
 
     def tenants_source_configurations(config)
-      Motel::ReservationSystem.source_configurations(config)
+      reservation_system.source_configurations(config)
+      ActiveRecord::Base.connection_handler.tenants_source = reservation_system.source
     end
 
     def tenants
@@ -60,7 +67,7 @@ module Motel
     end
 
     def tenants_source
-      Motel::ReservationSystem.source
+      reservation_system.source
     end
 
     private

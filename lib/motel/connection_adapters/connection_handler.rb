@@ -7,13 +7,15 @@ module Motel
 
       attr_accessor :tenants_source
 
-      def initialize
+      def initialize(source)
         @owner_to_pool = ThreadSafe::Cache.new(:initial_capacity => 2) do |h,k|
           h[k] = ThreadSafe::Cache.new(:initial_capacity => 2)
         end
         @class_to_pool = ThreadSafe::Cache.new(:initial_capacity => 2) do |h,k|
           h[k] = ThreadSafe::Cache.new
         end
+
+        @tenants_source = source
       end
 
       def establish_connection(tenant_name, spec = nil)
@@ -87,10 +89,6 @@ module Motel
           end
 
           spec
-        end
-
-        def tenants_source
-          Motel::ReservationSystem.source
         end
 
     end

@@ -3,18 +3,20 @@ require 'spec_helper'
 describe Motel::ConnectionAdapters::ConnectionHandler do
 
   before(:all) do
-    @tenants_source = Motel::ReservationSystem.source
-    @tenants_source.add_tenant('foo', FOO_SPEC)
-    @tenants_source.add_tenant('bar', BAR_SPEC)
+    @reservation_system = Motel::ReservationSystem.new
+    @reservation_system.source.add_tenant('foo', FOO_SPEC)
+    @reservation_system.source.add_tenant('bar', BAR_SPEC)
   end
 
   after(:all) do
-    @tenants_source.delete_tenant('foo')
-    @tenants_source.delete_tenant('bar')
+    @reservation_system.source.delete_tenant('foo')
+    @reservation_system.source.delete_tenant('bar')
   end
 
   before(:each) do
-    @handler = Motel::ConnectionAdapters::ConnectionHandler.new
+    @handler = Motel::ConnectionAdapters::ConnectionHandler.new(
+      @reservation_system.source
+    )
   end
 
   describe '#establish_connection' do
