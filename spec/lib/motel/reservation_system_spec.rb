@@ -56,6 +56,18 @@ describe Motel::ReservationSystem do
 
     end
 
+    context 'default source' do
+
+      before(:all) do
+        @reservation_system.source_configurations({source: :default})
+      end
+
+      it 'places a default instance on the source' do
+        expect(@reservation_system.source).to be_an_instance_of Motel::Sources::Default
+      end
+
+    end
+
   end
 
 end

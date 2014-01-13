@@ -5,6 +5,12 @@ module Motel
 
     class Default
 
+      def initialize(config = {})
+        if config[:configurations]
+          ActiveRecord::Base.configurations.merge!(config[:configurations])
+        end
+      end
+
       def tenants
         ActiveRecord::Base.configurations
       end
