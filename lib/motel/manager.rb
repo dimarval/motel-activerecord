@@ -70,14 +70,14 @@ module Motel
       ENV['TENANT'] || current_tenant || default_tenant
     end
 
-    def tenants_source
-      reservation_system.source
-    end
-
     private
 
       def remove_tenant_connection(name)
         ActiveRecord::Base.remove_connection(name)
+      end
+
+      def tenants_source
+        reservation_system.source
       end
 
   end

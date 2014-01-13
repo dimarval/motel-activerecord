@@ -10,17 +10,17 @@ describe Motel::Manager do
 
   before(:each) do
     @manager = Motel::Manager.new
-    @tenants_source = @manager.tenants_source
-    @manager.tenants_source.add_tenant('foo', FOO_SPEC)
-    @manager.tenants_source.add_tenant('bar', BAR_SPEC)
+    @tenants_source = @manager.reservation_system.source
+    @tenants_source.add_tenant('foo', FOO_SPEC)
+    @tenants_source.add_tenant('bar', BAR_SPEC)
   end
 
   after(:each) do
     @manager.reservation_system.source = @tenants_source
     ActiveRecord::Base.connection_handler.tenants_source = @tenants_source
 
-    @manager.tenants_source.tenants.keys.each do |tenant|
-      @manager.tenants_source.delete_tenant(tenant)
+    @tenants_source.tenants.keys.each do |tenant|
+      @tenants_source.delete_tenant(tenant)
     end
 
     ENV['TENANT'] = nil
@@ -115,7 +115,7 @@ describe Motel::Manager do
     it 'adds new tenant' do
       @manager.add_tenant('baz', BAZ_SPEC)
 
-      expect(@manager.tenants_source.tenant?('baz')).to be_true
+      expect(@tenants_source.tenant?('baz')).to be_true
     end
 
   end
@@ -125,8 +125,8 @@ describe Motel::Manager do
     it 'updates tenant' do
       @manager.update_tenant('foo', {adapter: 'mysql2', database: 'foo'})
 
-      expect(@manager.tenants_source.tenant('foo')['adapter']).to  eq 'mysql2'
-      expect(@manager.tenants_source.tenant('foo')['database']).to eq 'foo'
+      expect(@tenants_source.tenant('foo')['adapter']).to  eq 'mysql2'
+      expect(@tenants_source.tenant('foo')['database']).to eq 'foo'
     end
 
     it 'returns the spec unpdated' do
@@ -147,7 +147,7 @@ describe Motel::Manager do
 
     it 'deletes tenant' do
       @manager.delete_tenant('foo')
-      expect(@manager.tenants_source.tenant?('foo')).to be_false
+      expect(@tenants_source.tenant?('foo')).to be_false
     end
 
     it 'removes connection of tenant' do
@@ -169,10 +169,12 @@ describe Motel::Manager do
         table_name:  'tenant'
       })
 
-      expect(@manager.create_tenant_table).to be_true
-      expect(@manager.tenants_source.add_tenant('foo', FOO_SPEC)).to be_true
+      tenants_source = @manager.reservation_system.source
 
-      @manager.tenants_source.destroy_tenant_table
+      expect(@manager.create_tenant_table).to be_true
+      expect(tenants_source.add_tenant('foo', FOO_SPEC)).to be_true
+
+      tenants_source.destroy_tenant_table
     end
 
   end
@@ -185,10 +187,11 @@ describe Motel::Manager do
         source_spec: TENANTS_SPEC,
         table_name:  'tenant'
       })
-      @manager.tenants_source.create_tenant_table
+      tenants_source = @manager.reservation_system.source
+      tenants_source.create_tenant_table
 
       expect(@manager.destroy_tenant_table).to be_true
-      expect{@manager.tenants_source.add_tenant('foo', FOO_SPEC)}.to raise_error
+      expect{tenants_source.add_tenant('foo', FOO_SPEC)}.to raise_error
     end
 
   end
