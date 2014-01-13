@@ -182,5 +182,15 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
 
   end
 
+  describe '#tenants_sources=' do
+
+    it 'sets a tenats source for teh resolver' do
+      @handler.tenants_source = Motel::Sources::Redis.new
+
+      expect(@handler.resolver.tenants_source).to be_an_instance_of Motel::Sources::Redis
+    end
+
+  end
+
 end
 
