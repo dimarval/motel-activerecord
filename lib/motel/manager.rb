@@ -13,12 +13,16 @@ module Motel
 
     def initialize
       @reservation_system = ReservationSystem.new
-      ActiveRecord::Base.connection_handler.tenants_source = @reservation_system.source
+      ActiveRecord::Base.connection_handler.tenants_source = begin
+        @reservation_system.source
+      end
     end
 
     def tenants_source_configurations(config)
       reservation_system.source_configurations(config)
-      ActiveRecord::Base.connection_handler.tenants_source = reservation_system.source
+      ActiveRecord::Base.connection_handler.tenants_source = begin
+        reservation_system.source
+      end
     end
 
     def tenants
