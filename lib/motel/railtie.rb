@@ -38,7 +38,7 @@ module Motel
 
       if motel_config.tenants_source_configurations
         ActiveRecord::Base.motel.tenants_source_configurations(
-          tenants_source_configurations
+          motel_config.tenants_source_configurations
         )
       end
     end
