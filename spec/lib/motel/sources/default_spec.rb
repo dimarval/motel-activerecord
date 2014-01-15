@@ -2,16 +2,11 @@ require 'spec_helper'
 
 describe Motel::Sources::Default do
 
-  before(:all) do
-    @tenants_source = Motel::Sources::Default.new
-  end
-
   before(:each) do
-    ActiveRecord::Base.configurations = {
+    @tenants_source = Motel::Sources::Default.new({
       'foo' => FOO_SPEC,
       'bar' => BAR_SPEC
-    }
-    @config = ActiveRecord::Base.configurations
+    })
   end
 
   describe '#tenants' do
@@ -90,9 +85,9 @@ describe Motel::Sources::Default do
             'baz', {'adapter' => BAZ_SPEC['adapter'], 'database' => BAZ_SPEC['database']}
           )
 
-          expect(@config.key?('baz')).to be_true
-          expect(@config['baz']['adapter']).to eq BAZ_SPEC['adapter']
-          expect(@config['baz']['database']).to eq BAZ_SPEC['database']
+          expect(@tenants_source.tenants.key?('baz')).to be_true
+          expect(@tenants_source.tenants['baz']['adapter']).to eq BAZ_SPEC['adapter']
+          expect(@tenants_source.tenants['baz']['database']).to eq BAZ_SPEC['database']
         end
 
       end
@@ -104,9 +99,9 @@ describe Motel::Sources::Default do
             'baz', {adapter: BAZ_SPEC['adapter'], database: BAZ_SPEC['database']}
           )
 
-          expect(@config.key?('baz')).to be_true
-          expect(@config['baz']['adapter']).to eq BAZ_SPEC['adapter']
-          expect(@config['baz']['database']).to eq BAZ_SPEC['database']
+          expect(@tenants_source.tenants.key?('baz')).to be_true
+          expect(@tenants_source.tenants['baz']['adapter']).to eq BAZ_SPEC['adapter']
+          expect(@tenants_source.tenants['baz']['database']).to eq BAZ_SPEC['database']
         end
 
       end
@@ -126,8 +121,8 @@ describe Motel::Sources::Default do
             'foo', {adapter: 'mysql2', database: 'foo'}
           )
 
-          expect(@config['foo']['adapter']).to eq 'mysql2'
-          expect(@config['foo']['database']).to eq 'foo'
+          expect(@tenants_source.tenants['foo']['adapter']).to eq 'mysql2'
+          expect(@tenants_source.tenants['foo']['database']).to eq 'foo'
         end
 
       end
@@ -139,8 +134,8 @@ describe Motel::Sources::Default do
             'foo', {adapter: 'mysql2'}
           )
 
-          expect(@config['foo']['adapter']).to eq 'mysql2'
-          expect(@config['foo']['database']).to eq FOO_SPEC['database']
+          expect(@tenants_source.tenants['foo']['adapter']).to eq 'mysql2'
+          expect(@tenants_source.tenants['foo']['database']).to eq FOO_SPEC['database']
         end
 
       end
@@ -164,7 +159,7 @@ describe Motel::Sources::Default do
     it 'remove tenant from ActiveRecord::Base.configurations' do
       @tenants_source.delete_tenant('foo')
 
-      expect(@config.key?('foo')).to be_false
+      expect(@tenants_source.tenants.key?('foo')).to be_false
     end
 
   end

@@ -5,40 +5,35 @@ module Motel
 
     class Default
 
-      def initialize(config = {})
-        if config[:configurations]
-          ActiveRecord::Base.configurations.merge!(config[:configurations])
-        end
-      end
+      attr_accessor :tenants
 
-      def tenants
-        ActiveRecord::Base.configurations
+      def initialize(config = {})
+        @tenants = config || {}
       end
 
       def tenant(name)
-        ActiveRecord::Base.configurations[name]
+        tenants[name]
       end
 
       def tenant?(name)
-        ActiveRecord::Base.configurations.key?(name)
+        tenants.key?(name)
       end
 
       def add_tenant(name, spec)
         raise ExistingTenantError if tenant?(name)
 
-        ActiveRecord::Base.configurations[name] = keys_to_string(spec)
+        tenants[name] = keys_to_string(spec)
       end
 
       def update_tenant(name, spec)
         raise NonexistentTenantError unless tenant?(name)
 
         spec = keys_to_string(spec)
-        spec = ActiveRecord::Base.configurations[name].merge(spec)
-        ActiveRecord::Base.configurations[name] = spec
+        tenants[name].merge!(spec)
       end
 
       def delete_tenant(name)
-        ActiveRecord::Base.configurations.delete(name)
+        tenants.delete(name)
       end
 
       private
