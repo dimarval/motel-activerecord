@@ -3,6 +3,7 @@ require 'spec_helper'
 describe ActiveRecord::Base do
 
   before(:all) do
+    ActiveRecord::Base.motel.tenants_source_configurations({source: :default})
     ActiveRecord::Base.motel.add_tenant('foo', FOO_SPEC)
     ActiveRecord::Base.motel.add_tenant('bar', BAR_SPEC)
   end
