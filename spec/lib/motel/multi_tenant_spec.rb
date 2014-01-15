@@ -21,9 +21,10 @@ describe ActiveRecord::Base do
 
   describe '.establish_connection' do
 
-    it 'establish a connection' do
-      ActiveRecord::Base.establish_connection('foo')
-      expect(ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
+    it 'establishes a connection keyed  by the class name' do
+      ActiveRecord::Base.establish_connection(BAZ_SPEC)
+
+      expect(ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
     end
 
   end

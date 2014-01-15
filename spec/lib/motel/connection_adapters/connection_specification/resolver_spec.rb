@@ -2,25 +2,13 @@ require 'spec_helper'
 
 describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
 
-  before(:all) do
-    @tenants_source = Motel::Sources::Default.new
-    @resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new(@tenants_source)
-  end
-
-  before(:each) do
-    @tenants_source.add_tenant('foo', FOO_SPEC)
-    @tenants_source.add_tenant('bar', BAR_SPEC)
-  end
-
-  after(:each) do
-    @tenants_source.tenants.keys.each do |tenant_name|
-      @tenants_source.delete_tenant(tenant_name)
-    end
-  end
-
   describe '#spec' do
 
-    context 'existing tenant' do
+    context 'from a hash' do
+
+      before(:each) do
+        @resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
+      end
 
       context 'specifying adapter' do
 
@@ -28,7 +16,7 @@ describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
 
           it 'returns an instance of ConnectionSpecification' do
             expect(
-              @resolver.spec('foo')
+              @resolver.spec(BAZ_SPEC)
             ).to be_an_instance_of ActiveRecord::ConnectionAdapters::ConnectionSpecification
           end
 
@@ -37,9 +25,7 @@ describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
         context 'nonexistent adapter' do
 
           it 'rises an error' do
-            @tenants_source.update_tenant('foo', {adapter: 'nonexistent_adapter'})
-
-            expect{@resolver.spec('foo')}.to raise_error LoadError
+            expect{@resolver.spec({adapter: 'nonexistent_adapter'})}.to raise_error LoadError
           end
 
         end
@@ -49,10 +35,8 @@ describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
       context 'adapter unspecified' do
 
         it 'rises an error' do
-          @tenants_source.add_tenant('baz', {database: BAZ_SPEC['database']})
-
           expect{
-            @resolver.spec('baz')
+            @resolver.spec({database: BAZ_SPEC['database']})
           }.to raise_error ActiveRecord::AdapterNotSpecified
         end
 
@@ -60,10 +44,72 @@ describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
 
     end
 
-    context 'nonexistent tenant' do
+    context 'from a string' do
 
-      it 'rises an error' do
-        expect{@resolver.spec('baz')}.to raise_error Motel::NonexistentTenantError
+      before(:each) do
+        @resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new(
+          {'foo' => FOO_SPEC}
+        )
+      end
+
+      context 'string as a key' do
+
+        context 'existing configuration' do
+
+          it 'returns an instance of ConnectionSpecification' do
+            expect(
+              @resolver.spec('foo')
+            ).to be_an_instance_of ActiveRecord::ConnectionAdapters::ConnectionSpecification
+          end
+
+        end
+
+        context 'nonexistent configuration' do
+
+          it 'rises an error' do
+            expect{@resolver.spec('baz')}.to raise_error ActiveRecord::AdapterNotSpecified
+          end
+
+        end
+
+      end
+
+      context 'string as a url' do
+
+        before(:all) do
+          @url = 'mysql2://foo:foobar_password@localhost:3306/foobar'
+        end
+
+        it 'returns an instance of ConnectionSpecification' do
+          expect(
+            @resolver.spec(@url)
+          ).to be_an_instance_of ActiveRecord::ConnectionAdapters::ConnectionSpecification
+        end
+
+        it 'spec of connection specifications contains a correct adapter' do
+          expect(@resolver.spec(@url).config[:adapter]).to eq 'mysql2'
+        end
+
+        it 'spec of connection specifications contains a correct username' do
+          expect(@resolver.spec(@url).config[:username]).to eq 'foo'
+        end
+
+        it 'spec of connection specifications contains a correct password' do
+          expect(@resolver.spec(@url).config[:password]).to eq 'foobar_password'
+        end
+
+        it 'spec of connection specifications contains a correct host' do
+          expect(@resolver.spec(@url).config[:host]).to eq 'localhost'
+        end
+
+        it 'spec of connection specifications contains a correct port' do
+          expect(@resolver.spec(@url).config[:port]).to eq 3306
+        end
+
+        it 'spec of connection specifications contains a correct database' do
+          expect(@resolver.spec(@url).config[:database]).to eq 'foobar'
+        end
+
       end
 
     end

@@ -11,8 +11,10 @@ module Motel
 
     module ClassMethods
 
-      def establish_connection(tenant_name)
-        connection_handler.establish_connection tenant_name
+      def establish_connection(config)
+        resolver = ConnectionAdapters::ConnectionSpecification::Resolver.new
+        spec = resolver.spec(config)
+        connection_handler.establish_connection self.name, spec
       end
 
       def connection_pool

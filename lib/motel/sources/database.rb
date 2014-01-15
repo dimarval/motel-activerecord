@@ -6,7 +6,7 @@ module Motel
     class Database
 
       COLUMNS = {
-        name:   :string,
+        name:     :string,
         adapter:  :string,
         socket:   :string,
         port:     :integer,
@@ -14,7 +14,8 @@ module Motel
         host:     :string,
         username: :string,
         password: :string,
-        database: :string
+        database: :string,
+        url:      :string
       }
 
       attr_accessor :source_spec, :table_name
@@ -135,8 +136,8 @@ module Motel
 
         def spec
           @spec ||= begin
-            resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(source_spec, nil)
-            resolver.spec
+            resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
+            resolver.spec(source_spec)
           end
         end
 

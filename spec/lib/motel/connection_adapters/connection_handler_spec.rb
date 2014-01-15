@@ -48,11 +48,10 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
     context 'specifying tenant name and the spec' do
 
       it 'returns an instance if ConnectionPool' do
-        resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(
-          BAZ_SPEC, nil
-        )
+        resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
+        spec = resolver.spec(BAZ_SPEC)
         expect(
-          @handler.establish_connection('baz', resolver.spec)
+          @handler.establish_connection('baz', spec)
         ).to be_an_instance_of ActiveRecord::ConnectionAdapters::ConnectionPool
       end
 
@@ -187,7 +186,7 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
     it 'sets a tenats source for teh resolver' do
       @handler.tenants_source = Motel::Sources::Redis.new
 
-      expect(@handler.resolver.tenants_source).to be_an_instance_of Motel::Sources::Redis
+      expect(@handler.tenants_source).to be_an_instance_of Motel::Sources::Redis
     end
 
   end

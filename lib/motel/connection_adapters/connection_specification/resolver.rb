@@ -1,22 +1,20 @@
+require 'uri'
 require 'active_record'
+require 'active_support/core_ext/hash/keys'
 
 module Motel
   module ConnectionAdapters
     module ConnectionSpecification
       class Resolver
 
-        attr_accessor :tenants_source
+        attr_accessor :configurations
 
-        def initialize(tenants_source)
-          @tenants_source = tenants_source
+        def initialize(configurations = nil)
+          @configurations = configurations || {}
         end
 
-        def spec(tenant_name)
-          unless tenants_source.tenant?(tenant_name)
-            raise NonexistentTenantError, "Nonexistent #{tenant_name} tenant"
-          end
-
-          spec = resolve(tenants_source.tenant(tenant_name)).symbolize_keys
+        def spec(config)
+          spec = resolve(config).symbolize_keys
 
           raise(ActiveRecord::AdapterNotSpecified, "database configuration does not specify adapter") unless spec.key?(:adapter)
 
@@ -36,10 +34,13 @@ module Motel
         private
 
           def resolve(config)
-            if config
-              resolve_hash_connection config
-            else
+            case config
+            when nil
               raise ActiveRecord::AdapterNotSpecified
+            when String, Symbol
+              resolve_string_connection config.to_s
+            when Hash
+              resolve_hash_connection config
             end
           end
 
@@ -48,6 +49,40 @@ module Motel
               connection_hash = resolve_string_connection(url)
               spec.merge!(connection_hash)
             end
+            spec
+          end
+
+          def resolve_string_connection(spec)
+            hash = configurations.fetch(spec) do |k|
+              connection_url_to_hash(k)
+            end
+
+            resolve_hash_connection hash
+          end
+
+          def connection_url_to_hash(url)
+            config = URI.parse url
+            adapter = config.scheme
+            adapter = "postgresql" if adapter == "postgres"
+            spec = { :adapter => adapter,
+                     :username => config.user,
+                     :password => config.password,
+                     :port => config.port,
+                     :database => config.path.sub(%r{^/},""),
+                     :host => config.host }
+
+            spec.reject!{ |_,value| value.blank? }
+
+            uri_parser = URI::Parser.new
+
+            spec.map { |key,value| spec[key] = uri_parser.unescape(value) if value.is_a?(String) }
+
+            if config.query
+              options = Hash[config.query.split("&").map{ |pair| pair.split("=") }].symbolize_keys
+
+              spec.merge!(options)
+            end
+
             spec
           end
 

@@ -24,7 +24,8 @@ describe Motel::Sources::Database do
         `host`     VARCHAR,
         `username` VARCHAR,
         `password` VARCHAR,
-        `database` VARCHAR
+        `database` VARCHAR,
+        `url`      VARCHAR
       )
     SQL
   end
