@@ -5,8 +5,8 @@ module Motel
     included do
 
       mattr_accessor :motel, instance_writer: false
-      self.default_connection_handler = ConnectionAdapters::ConnectionHandler.new(Sources::Default.new)
-      self.motel = Manager.new
+      self.default_connection_handler = ConnectionAdapters::ConnectionHandler.new
+      self.motel = Manager
     end
 
     module ClassMethods

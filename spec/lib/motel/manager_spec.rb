@@ -3,30 +3,27 @@ require 'spec_helper'
 describe Motel::Manager do
 
   before(:all) do
-    ActiveRecord::Base.connection_handler = Motel::ConnectionAdapters::ConnectionHandler.new(
-      Motel::Sources::Default.new
-    )
+    ActiveRecord::Base.connection_handler = begin
+      Motel::ConnectionAdapters::ConnectionHandler.new
+    end
+    @manager = Motel::Manager
   end
 
   before(:each) do
-    @manager = Motel::Manager.new
-    @tenants_source = @manager.reservation_system.source
+    ActiveRecord::Base.connection_handler.tenants_source = begin
+      Motel::Sources::Default.new
+    end
+    @tenants_source = ActiveRecord::Base.connection_handler.tenants_source
     @tenants_source.add_tenant('foo', FOO_SPEC)
     @tenants_source.add_tenant('bar', BAR_SPEC)
   end
 
   after(:each) do
-    @manager.reservation_system.source = @tenants_source
-    ActiveRecord::Base.connection_handler.tenants_source = @tenants_source
-
-    @tenants_source.tenants.keys.each do |tenant|
-      @tenants_source.delete_tenant(tenant)
-    end
-
     ENV['TENANT'] = nil
     @manager.current_tenant = nil
     @manager.default_tenant = nil
 
+    # Remove all connections tenant
     ActiveRecord::Base.connection_handler.active_tenants do |tenant|
       ActiveRecord::Base.connection_handler.remove_connection(tenant)
     end
@@ -44,7 +41,7 @@ describe Motel::Manager do
         })
 
         expect(
-          @manager.reservation_system.source
+          @manager.tenants_source
         ).to be_an_instance_of Motel::Sources::Redis
       end
 
@@ -60,7 +57,7 @@ describe Motel::Manager do
         })
 
         expect(
-          @manager.reservation_system.source
+          @manager.tenants_source
         ).to be_an_instance_of Motel::Sources::Database
       end
 
@@ -163,18 +160,17 @@ describe Motel::Manager do
   describe '#create_tenant_table' do
 
     it 'creates tenant table' do
-      @manager.reservation_system.source_configurations({
+      database_source = Motel::Sources::Database.new({
         source:      :database,
         source_spec: TENANTS_SPEC,
         table_name:  'tenant'
       })
 
-      tenants_source = @manager.reservation_system.source
+      ActiveRecord::Base.connection_handler.tenants_source = database_source
 
       expect(@manager.create_tenant_table).to be_true
-      expect(tenants_source.add_tenant('foo', FOO_SPEC)).to be_true
 
-      tenants_source.destroy_tenant_table
+      database_source.destroy_tenant_table
     end
 
   end
@@ -182,16 +178,16 @@ describe Motel::Manager do
   describe '#destroy_tenant_table' do
 
     it 'returns true' do
-      @manager.reservation_system.source_configurations({
+      database_source = Motel::Sources::Database.new({
         source:      :database,
         source_spec: TENANTS_SPEC,
         table_name:  'tenant'
       })
-      tenants_source = @manager.reservation_system.source
-      tenants_source.create_tenant_table
+
+      ActiveRecord::Base.connection_handler.tenants_source = database_source
+      database_source.create_tenant_table
 
       expect(@manager.destroy_tenant_table).to be_true
-      expect{tenants_source.add_tenant('foo', FOO_SPEC)}.to raise_error
     end
 
   end
