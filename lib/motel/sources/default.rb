@@ -7,8 +7,10 @@ module Motel
 
       attr_accessor :tenants
 
+      alias :configurations= :tenants=
+
       def initialize(config = {})
-        @tenants = config || {}
+        @tenants = config[:configurations] || {}
       end
 
       def tenant(name)

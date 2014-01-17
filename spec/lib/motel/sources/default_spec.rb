@@ -3,10 +3,9 @@ require 'spec_helper'
 describe Motel::Sources::Default do
 
   before(:each) do
-    @tenants_source = Motel::Sources::Default.new({
-      'foo' => FOO_SPEC,
-      'bar' => BAR_SPEC
-    })
+    @tenants_source = Motel::Sources::Default.new(
+      configurations: {'foo' => FOO_SPEC, 'bar' => BAR_SPEC }
+    )
   end
 
   describe '#tenants' do
