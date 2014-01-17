@@ -1,4 +1,5 @@
 require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/string/inflections'
 require 'active_record'
 
 module Motel
