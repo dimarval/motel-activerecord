@@ -7,7 +7,7 @@ module Motel
 
       attr_accessor :tenants_source
 
-      def initialize(tenants_source)
+      def initialize(tenants_source = Sources::Default.new)
         @owner_to_pool = ThreadSafe::Cache.new(:initial_capacity => 2) do |h,k|
           h[k] = ThreadSafe::Cache.new(:initial_capacity => 2)
         end
