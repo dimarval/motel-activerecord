@@ -7,14 +7,15 @@ module Motel
       mattr_accessor :motel, instance_writer: false
       self.default_connection_handler = ConnectionAdapters::ConnectionHandler.new
       self.motel = Manager
+
     end
 
     module ClassMethods
 
       def establish_connection(config)
-        resolver = ConnectionAdapters::ConnectionSpecification::Resolver.new
+        resolver = ConnectionAdapters::ConnectionSpecification::Resolver.new(motel.tenants)
         spec = resolver.spec(config)
-        connection_handler.establish_connection self.name, spec
+        connection_handler.establish_connection (ENV['TENANT'] || self.name), spec
       end
 
       def connection_pool
