@@ -185,41 +185,6 @@ describe Motel::Manager do
 
   end
 
-  describe '#create_tenant_table' do
-
-    it 'creates tenant table' do
-      database_source = Motel::Sources::Database.new({
-        source:      :database,
-        source_spec: TENANTS_SPEC,
-        table_name:  'tenant'
-      })
-
-      ActiveRecord::Base.connection_handler.tenants_source = database_source
-
-      expect(@manager.create_tenant_table).to be_true
-
-      database_source.destroy_tenant_table
-    end
-
-  end
-
-  describe '#destroy_tenant_table' do
-
-    it 'returns true' do
-      database_source = Motel::Sources::Database.new({
-        source:      :database,
-        source_spec: TENANTS_SPEC,
-        table_name:  'tenant'
-      })
-
-      ActiveRecord::Base.connection_handler.tenants_source = database_source
-      database_source.create_tenant_table
-
-      expect(@manager.destroy_tenant_table).to be_true
-    end
-
-  end
-
   describe '#active_tenants' do
 
     it 'returns active tenans' do

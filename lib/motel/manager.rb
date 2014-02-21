@@ -50,14 +50,6 @@ module Motel
         !tenant?(name)
       end
 
-      def create_tenant_table
-        tenants_source.create_tenant_table
-      end
-
-      def destroy_tenant_table
-        tenants_source.destroy_tenant_table
-      end
-
       def active_tenants
         ActiveRecord::Base.connection_handler.active_tenants
       end

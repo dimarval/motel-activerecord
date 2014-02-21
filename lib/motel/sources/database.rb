@@ -5,19 +5,6 @@ module Motel
 
     class Database
 
-      COLUMNS = {
-        name:     :string,
-        adapter:  :string,
-        socket:   :string,
-        port:     :integer,
-        pool:     :integer,
-        host:     :string,
-        username: :string,
-        password: :string,
-        database: :string,
-        url:      :string
-      }
-
       attr_accessor :source_spec, :table_name
 
       def initialize(config = {})
@@ -87,29 +74,6 @@ module Motel
         end
       end
 
-      def create_tenant_table
-        connection_pool.with_connection do |conn|
-          unless conn.table_exists?(table_name)
-            conn.create_table(table_name, :id => false) do |t|
-              COLUMNS.each do |name, data_type|
-                t.send(data_type, name)
-              end
-            end
-            conn.add_index table_name, :name, :unique => true
-          end
-        end
-        connection.table_exists?(table_name)
-      end
-
-      def destroy_tenant_table
-        connection_pool.with_connection do |conn|
-          if conn.table_exists?(table_name)
-            conn.drop_table(table_name)
-          end
-        end
-        !connection.table_exists?(table_name)
-      end
-
       def connection
         connection_pool.connection
       end
@@ -120,12 +84,8 @@ module Motel
           @table ||= Arel::Table.new(table_name, self)
         end
 
-        def columns
-          @columns ||= COLUMNS.keys.map{ |column| table[column] }
-        end
-
         def query
-          @query ||= table.project(*columns)
+          @query ||= table.project('*')
         end
 
         def query_result
