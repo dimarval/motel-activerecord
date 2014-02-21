@@ -1,4 +1,4 @@
-require File.expand_path("../../lib/motel", __FILE__)
+require File.expand_path("../../lib/motel-activerecord", __FILE__)
 
 TEMP_DIR = File.expand_path("../tmp/", __FILE__)
 
