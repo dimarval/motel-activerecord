@@ -1,4 +1,4 @@
-Motel (Multi-Tenant)
+Motel ActiveRecord
 ===================
 
 Motel is a gem that adds functionality to ActiveRecord to use
@@ -6,21 +6,28 @@ connections to multiple databases, one for each tenant.
 
 # Features
 
-* Add functionality multi-tenant to ActiveRecord.
+* Adds multi-tenant functionality to ActiveRecord.
 * Multiple databases, one for each tenant.
 * Tenant connection details are stored keying them by the name on a database or redis server.
 * Use with or without Rails.
 
 # Installing
 
-```
-Run the following if you haven't done so before:
-gem sources -a http://gems.github.com/
-
-Install the gem:
-sudo gem install motel
+```ruby
+gem install motel-activerecord
 ```
 
+or add the following line to Gemfile:
+
+```ruby
+gem 'motel-activerecord'
+```
+
+and run `bundle install` from your shell.
+
+# Supported Ruby and Rails versions
+The gem motel-activerecord supports MRI Ruby 2.0 or greater and Rails 4.0 or greater.
+ 
 # Configuration
 
 ## Use with Rails
@@ -30,30 +37,30 @@ In your app/application.rb file write this:
 ### Specifying database as a source of tenants
 
 ```ruby
-config.motel.source_configurations :data_base do |c|
-  c.source = config.database_configuration[Rails.env]
-  c.table_name = 'tenants'
-end
+config.motel.tenants_source_configurations = {
+  source:      :database,
+  source_spec: { adapter: 'sqlite3', database: 'db/tenants.sqlite3' },
+  table_name:  'tenant'
+}
 ```
 
-You can specify the source by providing a hash of the data
-connection as a specification of ActiveRecord, example:
+You can specify the source by providing a hash of the
+connection specification. Example:
 
 ```ruby
-c.source = {adapter: 'sqlite3', database: 'db/tenants.sqlite3'}
+source_spec: {adapter: 'sqlite3', database: 'db/tenants.sqlite3'}
 ```
 
 Table name where are stored the connection details of tenants:
 
 ```ruby
-c.table_name = 'tenants'
+table_name: 'tenant'
 ```
 
-Note: The columns of the table must contain connection details are
-according to the information needed to connect to a database
-including the name of the tenant. Fields available are listed
-below:
-
+Note: The columns of the table must contain connection details and
+thad are according with the information needed to connect to a database,
+including the name column to store the tenant name. Example columns 
+are showed below:
 
 |Name       |Type       |
 | ----------|:---------:|
@@ -66,30 +73,44 @@ below:
 | username  | Integer   |
 | password  | Integer   |
 | database  | Integer   |
+| url       | String    |
 
-Another option is to create the table using the utility:
-
-```ruby
-ActiveRecord::Base.motel.create_tenant_table
-```
 
 ### Specifying a redis-server as a source of tenants
 
 ```ruby
-config.motel.source_configurations :redis do |c|
-  c.host = 127.0.0.1
-  c.port = 6380
-  c.password = 'redis_password'
-end
+config.motel.tenants_source_configurations = {
+  source:   :redis,
+  host:     127.0.0.1,
+  port:     6380,
+  password: 'redis_password'
+}
 ```
 To connect to Redis listening on a Unix socket, try use 'path'
 option.
 
 ### Default source of tenants
 
-Default tenants are obtained from the file `config/database.yml`.
-The actions like `add_tenant`, `update_tenant` and `delete_tenant`
-are not stored or modified in the file.
+Also you can use the gem without specify a source configuration. 
+
+If you want to assing dirently the tenants specificactions you can do it:
+
+```ruby
+config.motel.tenants_source_configurations = {
+  tenant: { 'foo' => { adapter: 'sqlite3', database: 'db/foo.sqlite3' }}
+}
+```
+
+Assing tenants from database.yml file:
+
+```ruby
+config.motel.tenants_source_configurations = {
+  tenant: Rails.application.config.database_configuration
+}
+```
+
+Note: The methods like `add_tenant`, `update_tenant` and 
+`delete_tenant` dosen't store permanently tenants.
 
 ### More configurations
 
@@ -100,21 +121,22 @@ config.motel.default_tenant = 'my_default_tenant'
 ```
 
 Tenants switching is done via the subdomain of the url, you can
-specify a criteria to identify the tenant providing a regex.
-Example, to get the tenant the following url
-`test-my_tenant_name.domain.com` you should write:
+specify a criteria to identify the tenant providing a regex as a 
+string. Example, to get the tenant `foo` from the following url
+`http://www.example.com/foo/index` you should write:
 
 ```ruby
-config.motel.admission_criteria = /\w*-{1}(\w*)\.{1}\w*/
+config.motel.admission_criteria = '\/(\w*)\/'
 ```
 
-To disable automatic switching between tenants by url:
+To disable automatic switching between tenants by url you must
+disable the middleware:
 
 ```ruby
 config.motel.disable_middleware = true
 ```
 
-Path of the web page to show if nonexistent tenant. Default is
+Path of the html page to show if tenant doesn't exist. Default is
 `public/404.html`.
 
 ```ruby
@@ -125,20 +147,36 @@ config.motel.nonexistent_tenant_page = 'new_path'
 
 ### Specifying the source of tenants
 
-You can set the source of the tenants in the same way as with Rails, all you have you do is change the `config` method for `ActiveRecord::Base.motel`:
+You can set the source of the tenants in the same way as with Rails, use the method `tenants_source_configurations` of `ActiveRecord::Base.motel`:
 
 ```ruby
-ActiveRecord::Base.motel.source_configurations :data_base do |c|
-  c.source = {adapter: 'sqlite3', database: 'db/tenants.sqlite3'}
-  c.table_name = 'tenants'
-end
+ActiveRecord::Base.motel.tenants_source_configurations({
+  source:      :database,
+  source_spec: { adapter: 'sqlite3', database: 'db/tenants.sqlite3' },
+  table_name:  'tenant'
+})
 ```
 
-# Usage
+# Available methods
+
+Set a tenats source configurations
+```ruby
+ActiveRecord::Base.motel.tenants_source_configurations(config)
+```
+
+Set the admission criterio for the middleware
+```ruby
+ActiveRecord::Base.motel.admission_criterio
+```
 
 Set a default tenant
 ```ruby
 ActiveRecord::Base.motel.default_tenant
+```
+
+Set the html page to show if tenant doesn't exist
+```ruby
+ActiveRecord::Base.motel.nonexistent_tenant_page
 ```
 
 Set a current tenant
@@ -163,27 +201,17 @@ ActiveRecord::Base.motel.tenant?(name)
 
 Add tenant
 ```ruby
-ActiveRecord::Base.motel.add_tenant(name, spec, expiration)
+ActiveRecord::Base.motel.add_tenant(name, spec)
 ```
 
 Update tenant
 ```ruby
-ActiveRecord::Base.motel.update_tenant(name, spec, expiration)
+ActiveRecord::Base.motel.update_tenant(name, spec)
 ```
 
 Delete tenant
 ```ruby
 ActiveRecord::Base.motel.delete_tenant(name)
-```
-
-Create tenant table
-```ruby
-ActiveRecord::Base.motel.create_tenant_table
-```
-
-Destroy tenant table
-```ruby
-ActiveRecord::Base.motel.delete_tenant_table
 ```
 
 Retrieve the names of the tenants of active connections
@@ -195,5 +223,3 @@ Determine the tenant to use for the connection
 ```ruby
 ActiveRecord::Base.motel.determines_tenant
 ```
-
-
