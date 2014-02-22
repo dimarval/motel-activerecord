@@ -137,7 +137,8 @@ string. Example, to get the tenant `foo` from the following url
 config.motel.admission_criteria = '\/(\w*)\/'
 ```
 
-To disable automatic switching between tenants by url you must
+
+If you do not want the automatic switch tenants by url you must
 disable the middleware:
 
 ```ruby
