@@ -137,8 +137,7 @@ string. Example, to get the tenant `foo` from the following url
 config.motel.admission_criteria = '\/(\w*)\/'
 ```
 
-
-If you do not want the automatic switch tenants by url you must
+If you do not want the automatic switching of tenants by url you must
 disable the middleware:
 
 ```ruby
@@ -174,9 +173,9 @@ Set a tenats source configurations
 ActiveRecord::Base.motel.tenants_source_configurations(config)
 ```
 
-Set the admission criterio for the middleware
+Set the admission criteria for the middleware
 ```ruby
-ActiveRecord::Base.motel.admission_criterio
+ActiveRecord::Base.motel.admission_criteria
 ```
 
 Set a default tenant
