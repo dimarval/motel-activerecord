@@ -13,7 +13,7 @@ module Motel
     class << self
 
       def tenants_source_configurations(config)
-        source_type = config[:source]
+        source_type = config[:source] || 'default'
         source_class = "Motel::Sources::#{source_type.to_s.camelize}".constantize
 
         source_instance = source_class.new(config)
