@@ -1,4 +1,4 @@
-Motel ActiveRecord
+Motel-ActiveRecord
 ===================
 
 Motel is a gem that adds functionality to ActiveRecord to use
@@ -59,7 +59,7 @@ table_name: 'tenant'
 
 Note: The columns of the table must contain connection details and
 thad are according with the information needed to connect to a database,
-including the name column to store the tenant name. Example columns 
+including the name column to store the tenant name. Example columns
 are showed below:
 
 |Name       |Type       |
@@ -91,13 +91,13 @@ option.
 
 ### Default source of tenants
 
-Also you can use the gem without specify a source configuration. 
+Also you can use the gem without specify a source configuration.
 
 If you want to assing dirently the tenants specificactions you can do it:
 
 ```ruby
 config.motel.tenants_source_configurations = {
-  tenant: { 'foo' => { adapter: 'sqlite3', database: 'db/foo.sqlite3' }}
+  configurations: { 'foo' => { adapter: 'sqlite3', database: 'db/foo.sqlite3' }}
 }
 ```
 
@@ -105,12 +105,20 @@ Assing tenants from database.yml file:
 
 ```ruby
 config.motel.tenants_source_configurations = {
-  tenant: Rails.application.config.database_configuration
+  configurations: Rails.application.config.database_configuration
 }
 ```
 
-Note: The methods like `add_tenant`, `update_tenant` and 
+Note: The methods like `add_tenant`, `update_tenant` and
 `delete_tenant` dosen't store permanently tenants.
+
+### Use rake task
+Set the `TENANT` environment variable to run the rake task on a
+specific tenant.
+
+```ruby
+$ TENANT='foo' rake db:migrate
+```
 
 ### More configurations
 
@@ -121,7 +129,7 @@ config.motel.default_tenant = 'my_default_tenant'
 ```
 
 Tenants switching is done via the subdomain of the url, you can
-specify a criteria to identify the tenant providing a regex as a 
+specify a criteria to identify the tenant providing a regex as a
 string. Example, to get the tenant `foo` from the following url
 `http://www.example.com/foo/index` you should write:
 
@@ -147,7 +155,8 @@ config.motel.nonexistent_tenant_page = 'new_path'
 
 ### Specifying the source of tenants
 
-You can set the source of the tenants in the same way as with Rails, use the method `tenants_source_configurations` of `ActiveRecord::Base.motel`:
+You can set the source of the tenants in the same way as with Rails,
+use the method `tenants_source_configurations` of `ActiveRecord::Base.motel`:
 
 ```ruby
 ActiveRecord::Base.motel.tenants_source_configurations({
