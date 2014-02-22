@@ -130,7 +130,7 @@ config.motel.default_tenant = 'my_default_tenant'
 
 Tenants switching is done via the subdomain of the url, you can
 specify a criteria to identify the tenant providing a regex as a
-string. Example, to get the tenant `foo` from the following url
+string. Example, to get the tenant `foo` from the follow url
 `http://www.example.com/foo/index` you should write:
 
 ```ruby
