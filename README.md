@@ -69,10 +69,10 @@ are showed below:
 | sockect   | String    |
 | port      | Integer   |
 | pool      | Integer   |
-| host      | Integer   |
-| username  | Integer   |
-| password  | Integer   |
-| database  | Integer   |
+| host      | String    |
+| username  | String    |
+| password  | String    |
+| database  | String    |
 | url       | String    |
 
 
@@ -156,10 +156,10 @@ config.motel.nonexistent_tenant_page = 'new_path'
 ### Specifying the source of tenants
 
 You can set the source of the tenants in the same way as with Rails,
-use the method `tenants_source_configurations` of `ActiveRecord::Base.motel`:
+use the method `tenants_source_configurations` of `Motel::Manager`:
 
 ```ruby
-ActiveRecord::Base.motel.tenants_source_configurations({
+Motel::Manager.tenants_source_configurations({
   source:      :database,
   source_spec: { adapter: 'sqlite3', database: 'db/tenants.sqlite3' },
   table_name:  'tenant'
@@ -169,66 +169,79 @@ ActiveRecord::Base.motel.tenants_source_configurations({
 # Available methods
 
 Set a tenats source configurations
+
 ```ruby
-ActiveRecord::Base.motel.tenants_source_configurations(config)
+Motel::Manager.tenants_source_configurations(config)
 ```
 
 Set the admission criteria for the middleware
+
 ```ruby
-ActiveRecord::Base.motel.admission_criteria
+Motel::Manager.admission_criteria
 ```
 
 Set a default tenant
+
 ```ruby
-ActiveRecord::Base.motel.default_tenant
+Motel::Manager.default_tenant
 ```
 
 Set the html page to show if tenant doesn't exist
+
 ```ruby
-ActiveRecord::Base.motel.nonexistent_tenant_page
+Motel::Manager.nonexistent_tenant_page
 ```
 
 Set a current tenant
+
 ```ruby
-ActiveRecord::Base.motel.current_tenant
+Motel::Manager.current_tenant
 ```
 
 Retrieve the connection details of all tenants
+
 ```ruby
-ActiveRecord::Base.motel.tenants
+Motel::Manager.tenants
 ```
 
 Retrieve a tenant
+
 ```ruby
-ActiveRecord::Base.motel.tenant(name)
+Motel::Manager.tenant(name)
 ```
 
 Determine if a tenant exists
+
 ```ruby
-ActiveRecord::Base.motel.tenant?(name)
+Motel::Manager.tenant?(name)
 ```
 
 Add tenant
+
 ```ruby
-ActiveRecord::Base.motel.add_tenant(name, spec)
+Motel::Manager.add_tenant(name, spec)
 ```
 
 Update tenant
+
 ```ruby
-ActiveRecord::Base.motel.update_tenant(name, spec)
+Motel::Manager.update_tenant(name, spec)
 ```
 
 Delete tenant
+
 ```ruby
-ActiveRecord::Base.motel.delete_tenant(name)
+Motel::Manager.delete_tenant(name)
 ```
 
 Retrieve the names of the tenants of active connections
+
 ```ruby
-ActiveRecord::Base.motel.active_tenants
+Motel::Manager.active_tenants
 ```
 
 Determine the tenant to use for the connection
+
 ```ruby
-ActiveRecord::Base.motel.determines_tenant
+Motel::Manager.determines_tenant
 ```

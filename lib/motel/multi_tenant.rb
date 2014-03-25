@@ -4,16 +4,14 @@ module Motel
 
     included do
 
-      mattr_accessor :motel, instance_writer: false
       self.default_connection_handler = ConnectionAdapters::ConnectionHandler.new
-      self.motel = Manager
 
     end
 
     module ClassMethods
 
       def establish_connection(config)
-        resolver = ConnectionAdapters::ConnectionSpecification::Resolver.new(motel.tenants)
+        resolver = ConnectionAdapters::ConnectionSpecification::Resolver.new(Motel::Manager.tenants)
         spec = resolver.spec(config)
         connection_handler.establish_connection (ENV['TENANT'] || self.name), spec
       end
@@ -39,7 +37,7 @@ module Motel
       end
 
       def current_tenant
-        motel.determines_tenant or raise Motel::NoCurrentTenantError
+        Motel::Manager.determines_tenant or raise Motel::NoCurrentTenantError
       end
 
     end

@@ -49,7 +49,7 @@ module Motel
 
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Reloader.send(hook) do
-          if ActiveRecord::Base.motel.active_tenants.any?
+          if Motel::Manager.active_tenants.any?
             ActiveRecord::Base.clear_reloadable_connections!
             ActiveRecord::Base.clear_cache!
           end
