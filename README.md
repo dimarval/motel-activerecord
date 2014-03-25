@@ -26,8 +26,13 @@ gem 'motel-activerecord'
 and run `bundle install` from your shell.
 
 # Supported Ruby and Rails versions
+
 The gem motel-activerecord supports MRI Ruby 2.0 or greater and Rails 4.0 or greater.
- 
+
+# SemVer
+
+This gem is based on the [Semantic Versioning](http://semver.org/).
+
 # Configuration
 
 ## Use with Rails
@@ -113,6 +118,7 @@ Note: The methods like `add_tenant`, `update_tenant` and
 `delete_tenant` dosen't store permanently tenants.
 
 ### Use rake task
+
 Set the `TENANT` environment variable to run the rake task on a
 specific tenant.
 
