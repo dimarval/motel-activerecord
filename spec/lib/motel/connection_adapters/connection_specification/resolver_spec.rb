@@ -77,7 +77,7 @@ describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
       context 'string as a url' do
 
         before(:all) do
-          @url = 'mysql2://foo:foobar_password@localhost:3306/foobar'
+          @url = 'sqlite3://foo:foobar_password@localhost:3306/foobar'
         end
 
         it 'returns an instance of ConnectionSpecification' do
@@ -87,7 +87,7 @@ describe Motel::ConnectionAdapters::ConnectionSpecification::Resolver do
         end
 
         it 'spec of connection specifications contains a correct adapter' do
-          expect(@resolver.spec(@url).config[:adapter]).to eq 'mysql2'
+          expect(@resolver.spec(@url).config[:adapter]).to eq 'sqlite3'
         end
 
         it 'spec of connection specifications contains a correct username' do

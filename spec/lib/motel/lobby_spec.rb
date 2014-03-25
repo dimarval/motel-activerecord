@@ -13,13 +13,13 @@ describe Motel::Lobby do
   end
 
   before(:all) do
-    ActiveRecord::Base.motel.add_tenant('foo', FOO_SPEC)
+    Motel::Manager.add_tenant('foo', FOO_SPEC)
   end
 
   after(:all) do
-    ActiveRecord::Base.motel.delete_tenant('foo')
-    ActiveRecord::Base.motel.admission_criteria = nil #sets default
-    ActiveRecord::Base.motel.nonexistent_tenant_page = nil #sets default
+    Motel::Manager.delete_tenant('foo')
+    Motel::Manager.admission_criteria = nil #sets default
+    Motel::Manager.nonexistent_tenant_page = nil #sets default
   end
 
   describe '#call' do
@@ -27,7 +27,7 @@ describe Motel::Lobby do
     context 'default admission criteria' do
 
       before(:all) do
-        ActiveRecord::Base.motel.admission_criteria = nil
+        Motel::Manager.admission_criteria = nil
       end
 
       context 'url match' do
@@ -41,7 +41,7 @@ describe Motel::Lobby do
           it 'sets the current tenant' do
             request @url
 
-            expect(ActiveRecord::Base.motel.current_tenant).to eq 'foo'
+            expect(Motel::Manager.current_tenant).to eq 'foo'
           end
 
           it 'response is ok' do
@@ -67,7 +67,7 @@ describe Motel::Lobby do
           context 'with default nonexistent tenant message' do
 
             it 'returns default message on body' do
-              ActiveRecord::Base.motel.nonexistent_tenant_page = nil
+              Motel::Manager.nonexistent_tenant_page = nil
               request @url
 
               expect(last_response.body).to eq "Nonexistent bar tenant"
@@ -83,7 +83,7 @@ describe Motel::Lobby do
               file.write(message)
               file.close
 
-              ActiveRecord::Base.motel.nonexistent_tenant_page = file.path
+              Motel::Manager.nonexistent_tenant_page = file.path
               request @url
 
               expect(last_response.body).to eq message
@@ -102,7 +102,7 @@ describe Motel::Lobby do
   context 'specifying admission criteria' do
 
     before(:all) do
-      ActiveRecord::Base.motel.admission_criteria = 'tenants\/(\w*)'
+      Motel::Manager.admission_criteria = 'tenants\/(\w*)'
     end
 
     context 'url match' do
@@ -116,7 +116,7 @@ describe Motel::Lobby do
         it 'sets the current tenant' do
           request @url
 
-          expect(ActiveRecord::Base.motel.current_tenant).to eq 'foo'
+          expect(Motel::Manager.current_tenant).to eq 'foo'
         end
 
         it 'response is ok' do
@@ -138,7 +138,7 @@ describe Motel::Lobby do
       it 'sets null the current tenant' do
         request @url
 
-        expect(ActiveRecord::Base.motel.current_tenant).to be_nil
+        expect(Motel::Manager.current_tenant).to be_nil
      end
 
       it 'response is ok' do

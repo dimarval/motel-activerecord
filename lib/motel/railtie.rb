@@ -39,7 +39,7 @@ module Motel
     end
 
     initializer "motel.configure_middleware" do |app|
-      unless Rails.application.config.motel.disable_middleware
+      if !Rails.application.config.motel.disable_middleware && (Rails.env != 'test')
         app.config.middleware.insert_before ActiveRecord::Migration::CheckPending, Lobby
       end
     end
@@ -49,7 +49,7 @@ module Motel
 
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Reloader.send(hook) do
-          if ActiveRecord::Base.motel.active_tenants.any?
+          if Motel::Manager.active_tenants.any?
             ActiveRecord::Base.clear_reloadable_connections!
             ActiveRecord::Base.clear_cache!
           end
