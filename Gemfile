@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'activesupport'
+gem 'activesupport', '~> 4.0'
 gem 'activerecord', '~> 4.0'
-gem 'redis'
-gem 'sqlite3'
+gem 'redis', '~> 3.0.0'
 
