@@ -121,11 +121,10 @@ describe Motel::Manager do
     end
 
     it 'returns true if tenant baz does exist' do
-      resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(
-        BAZ_SPEC, nil
-      )
+      resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
+      spec = resolver.spec(BAZ_SPEC)
       handler = ActiveRecord::Base.connection_handler
-      handler.establish_connection('baz', resolver.spec)
+      handler.establish_connection('baz', spec)
       expect(@manager.tenant?('baz')).to be_true
     end
 
