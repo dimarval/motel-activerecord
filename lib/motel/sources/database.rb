@@ -103,7 +103,7 @@ module Motel
 
         def connection_handler
           @connection_handler ||= begin
-            handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
+            handler = Motel::ConnectionAdapters::ConnectionHandler.new
             handler.establish_connection self.class, spec
             handler
           end

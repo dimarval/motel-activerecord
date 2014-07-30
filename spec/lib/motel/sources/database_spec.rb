@@ -5,9 +5,9 @@ describe Motel::Sources::Database do
   before(:all) do
     @klass = Class.new(ActiveRecord::Base) { def self.name; 'klass'; end }
 
-    resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new(TENANTS_SPEC, nil)
-    @handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
-    @handler.establish_connection(@klass, resolver.spec)
+    resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
+    @handler = Motel::ConnectionAdapters::ConnectionHandler.new
+    @handler.establish_connection(@klass, resolver.spec(TENANTS_SPEC))
 
     @table_name = 'tenant'
     @tenants_source = Motel::Sources::Database.new(

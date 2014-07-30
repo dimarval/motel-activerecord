@@ -16,9 +16,11 @@ module Motel
             Rails.application.config.motel.tenants_source_configurations
           )
 
+          # Set a current tenant allow to db:create:all task get the connection
           Motel::Manager.current_tenant = "ActiveRecord::Base"
 
           ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
+          ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration
           ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
         end
       end
