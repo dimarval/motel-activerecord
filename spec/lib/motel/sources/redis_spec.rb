@@ -33,7 +33,7 @@ describe Motel::Sources::Redis do
     end
 
     it 'exist foo key' do
-      expect(@tenants_source.tenants.key?('foo')).to be_true
+      expect(@tenants_source.tenants.key?('foo')).to be_truthy
     end
 
     it 'tenant foo has a correct spec' do
@@ -42,7 +42,7 @@ describe Motel::Sources::Redis do
     end
 
     it 'exist bar key' do
-      expect(@tenants_source.tenants.key?('bar')).to be_true
+      expect(@tenants_source.tenants.key?('bar')).to be_truthy
     end
 
     it 'tenant bar has a correct spec' do
@@ -76,11 +76,11 @@ describe Motel::Sources::Redis do
   describe '#tenant?' do
 
     it 'returns true if tenant does exist' do
-      expect(@tenants_source.tenant?('foo')).to be_true
+      expect(@tenants_source.tenant?('foo')).to be_truthy
     end
 
     it 'returns false if tenant does not exist' do
-      expect(@tenants_source.tenant?('baz')).to be_false
+      expect(@tenants_source.tenant?('baz')).to be_falsey
     end
 
   end
@@ -178,8 +178,8 @@ describe Motel::Sources::Redis do
     it 'remove tenant from redis server' do
       @tenants_source.delete_tenant('foo')
 
-      expect(@redis_server.hexists("#{@prefix_tenant_alias}foo", 'adapter')).to be_false
-      expect(@redis_server.hexists("#{@prefix_tenant_alias}foo", 'database')).to be_false
+      expect(@redis_server.hexists("#{@prefix_tenant_alias}foo", 'adapter')).to be_falsey
+      expect(@redis_server.hexists("#{@prefix_tenant_alias}foo", 'database')).to be_falsey
     end
 
   end

@@ -106,12 +106,12 @@ describe ActiveRecord::Base do
 
       it 'returns true' do
         Motel::Manager.current_tenant = 'foo'
-        expect(ActiveRecord::Base.connected?).to be_true
+        expect(ActiveRecord::Base.connected?).to be_truthy
       end
 
       it 'returns false' do
         Motel::Manager.current_tenant = 'bar'
-        expect(ActiveRecord::Base.connected?).to be_false
+        expect(ActiveRecord::Base.connected?).to be_falsey
       end
 
     end

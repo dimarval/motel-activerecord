@@ -53,7 +53,7 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
     context 'existing tenant' do
 
       it 'initializes and returns a connection' do
-        expect(@handler.retrieve_connection('foo')).to be_true
+        expect(@handler.retrieve_connection('foo')).to be_truthy
       end
 
       it 'returns a connection' do
@@ -80,7 +80,7 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
     context 'existing tenant' do
 
       it 'initializes and returns a connection pool' do
-        expect(@handler.retrieve_connection_pool('foo')).to be_true
+        expect(@handler.retrieve_connection_pool('foo')).to be_truthy
       end
 
       it 'returns a connection pool' do
@@ -106,11 +106,11 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
 
     it 'returns true' do
       @handler.retrieve_connection('foo')
-      expect(@handler.connected?('foo')).to be_true
+      expect(@handler.connected?('foo')).to be_truthy
     end
 
     it 'returns false' do
-      expect(@handler.connected?('foo')).to be_false
+      expect(@handler.connected?('foo')).to be_falsey
     end
 
   end
@@ -118,12 +118,12 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
   describe '#active_connections?' do
 
     it 'has not active connections' do
-      expect(@handler.active_connections?).to be_false
+      expect(@handler.active_connections?).to be_falsey
     end
 
     it 'has active connections' do
       @handler.retrieve_connection('foo')
-      expect(@handler.active_connections?).to be_true
+      expect(@handler.active_connections?).to be_truthy
     end
 
   end
@@ -132,10 +132,10 @@ describe Motel::ConnectionAdapters::ConnectionHandler do
 
     it 'removes the connection' do
       @handler.retrieve_connection('foo')
-      expect(@handler.active_connections?).to be_true
+      expect(@handler.active_connections?).to be_truthy
 
       @handler.remove_connection('foo')
-      expect(@handler.active_connections?).to be_false
+      expect(@handler.active_connections?).to be_falsey
     end
 
   end
