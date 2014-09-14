@@ -96,11 +96,11 @@ describe Motel::Manager do
   describe '#tenants' do
 
     it 'returns tenant foo' do
-      expect(@manager.tenants.key?('foo')).to be_true
+      expect(@manager.tenants.key?('foo')).to be_truthy
     end
 
     it 'returns tenant bar' do
-      expect(@manager.tenants.key?('bar')).to be_true
+      expect(@manager.tenants.key?('bar')).to be_truthy
     end
 
   end
@@ -117,7 +117,7 @@ describe Motel::Manager do
   describe '#tenant?' do
 
     it 'returns true if tenant foo does exist' do
-      expect(@manager.tenant?('foo')).to be_true
+      expect(@manager.tenant?('foo')).to be_truthy
     end
 
     it 'returns true if tenant baz does exist' do
@@ -125,11 +125,11 @@ describe Motel::Manager do
       spec = resolver.spec(BAZ_SPEC)
       handler = ActiveRecord::Base.connection_handler
       handler.establish_connection('baz', spec)
-      expect(@manager.tenant?('baz')).to be_true
+      expect(@manager.tenant?('baz')).to be_truthy
     end
 
     it 'returns false if tenant does not exist' do
-      expect(@manager.tenant?('foobar')).to be_false
+      expect(@manager.tenant?('foobar')).to be_falsey
     end
 
   end
@@ -139,7 +139,7 @@ describe Motel::Manager do
     it 'adds new tenant' do
       @manager.add_tenant('baz', BAZ_SPEC)
 
-      expect(@tenants_source.tenant?('baz')).to be_true
+      expect(@tenants_source.tenant?('baz')).to be_truthy
     end
 
   end
@@ -166,12 +166,12 @@ describe Motel::Manager do
   describe '#delete_tenant' do
 
     it 'returns true' do
-      expect(@manager.delete_tenant('foo')).to be_true
+      expect(@manager.delete_tenant('foo')).to be_truthy
     end
 
     it 'deletes tenant' do
       @manager.delete_tenant('foo')
-      expect(@tenants_source.tenant?('foo')).to be_false
+      expect(@tenants_source.tenant?('foo')).to be_falsey
     end
 
     it 'removes connection of tenant' do

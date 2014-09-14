@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = 'motel-activerecord'
   s.version     = version
   s.platform    = Gem::Platform::RUBY
-  s.date        = '2014-02-21'
+  s.date        = '2014-09-14'
   s.summary     = "Multi-tenant gem"
   s.description = "ActiveRecord extension to use connections to multiple databases"
   s.authors     = ["Diego Martínez Valdelamar"]
@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '~> 4.0'
   s.add_dependency 'redis', '~> 3.0.0'
 
-  s.add_development_dependency 'rspec', '~>1.3.0'
+  s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'sqlite3', '~> 1.0'
 end
 

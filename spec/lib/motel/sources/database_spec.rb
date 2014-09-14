@@ -72,7 +72,7 @@ describe Motel::Sources::Database do
     end
 
     it 'exist foo key' do
-      expect(@tenants_source.tenants.key?('foo')).to be_true
+      expect(@tenants_source.tenants.key?('foo')).to be_truthy
     end
 
     it 'tenant foo has a correct spec' do
@@ -81,7 +81,7 @@ describe Motel::Sources::Database do
     end
 
     it 'exist bar key' do
-      expect(@tenants_source.tenants.key?('bar')).to be_true
+      expect(@tenants_source.tenants.key?('bar')).to be_truthy
     end
 
     it 'tenant bar has a correct spec' do
@@ -115,11 +115,11 @@ describe Motel::Sources::Database do
   describe '#tenant?' do
 
     it 'returns true if tenant does exist' do
-      expect(@tenants_source.tenant?('foo')).to be_true
+      expect(@tenants_source.tenant?('foo')).to be_truthy
     end
 
     it 'returns false if tenant does not exist' do
-      expect(@tenants_source.tenant?('baz')).to be_false
+      expect(@tenants_source.tenant?('baz')).to be_falsey
     end
 
   end

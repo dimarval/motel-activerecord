@@ -11,7 +11,7 @@ describe Motel::Sources::Default do
   describe '#tenants' do
 
     it 'exist foo key' do
-      expect(@tenants_source.tenants.key?('foo')).to be_true
+      expect(@tenants_source.tenants.key?('foo')).to be_truthy
     end
 
     it 'tenant foo has a correct spec' do
@@ -20,7 +20,7 @@ describe Motel::Sources::Default do
     end
 
     it 'exist bar key' do
-      expect(@tenants_source.tenants.key?('bar')).to be_true
+      expect(@tenants_source.tenants.key?('bar')).to be_truthy
     end
 
     it 'tenant bar has a correct spec' do
@@ -54,11 +54,11 @@ describe Motel::Sources::Default do
   describe '#tenant?' do
 
     it 'returns true if tenant does exist' do
-      expect(@tenants_source.tenant?('foo')).to be_true
+      expect(@tenants_source.tenant?('foo')).to be_truthy
     end
 
     it 'returns false if tenant does not exist' do
-      expect(@tenants_source.tenant?('baz')).to be_false
+      expect(@tenants_source.tenant?('baz')).to be_falsey
     end
 
   end
@@ -84,7 +84,7 @@ describe Motel::Sources::Default do
             'baz', {'adapter' => BAZ_SPEC['adapter'], 'database' => BAZ_SPEC['database']}
           )
 
-          expect(@tenants_source.tenants.key?('baz')).to be_true
+          expect(@tenants_source.tenants.key?('baz')).to be_truthy
           expect(@tenants_source.tenants['baz']['adapter']).to eq BAZ_SPEC['adapter']
           expect(@tenants_source.tenants['baz']['database']).to eq BAZ_SPEC['database']
         end
@@ -98,7 +98,7 @@ describe Motel::Sources::Default do
             'baz', {adapter: BAZ_SPEC['adapter'], database: BAZ_SPEC['database']}
           )
 
-          expect(@tenants_source.tenants.key?('baz')).to be_true
+          expect(@tenants_source.tenants.key?('baz')).to be_truthy
           expect(@tenants_source.tenants['baz']['adapter']).to eq BAZ_SPEC['adapter']
           expect(@tenants_source.tenants['baz']['database']).to eq BAZ_SPEC['database']
         end
@@ -158,7 +158,7 @@ describe Motel::Sources::Default do
     it 'remove tenant from ActiveRecord::Base.configurations' do
       @tenants_source.delete_tenant('foo')
 
-      expect(@tenants_source.tenants.key?('foo')).to be_false
+      expect(@tenants_source.tenants.key?('foo')).to be_falsey
     end
 
   end

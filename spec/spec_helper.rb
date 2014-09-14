@@ -9,6 +9,6 @@ BAR_SPEC = {'adapter' => 'sqlite3', 'database' => "#{TEMP_DIR}/bar.sqlite3"}
 BAZ_SPEC = {'adapter' => 'sqlite3', 'database' => "#{TEMP_DIR}/baz.sqlite3"}
 
 RSpec.configure do |config|
-  config.color_enabled = true
+  config.color = true
 end
 
