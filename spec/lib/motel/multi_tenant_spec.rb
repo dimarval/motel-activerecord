@@ -22,10 +22,28 @@ describe ActiveRecord::Base do
 
   describe '.establish_connection' do
 
-    it 'establishes a connection keyed  by the class name' do
-      ActiveRecord::Base.establish_connection(BAZ_SPEC)
+    context 'setting the current tenant name' do
 
-      expect(ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
+      before(:each) do
+        Motel::Manager.current_tenant = 'foo'
+      end
+
+      it 'establishes a connection keyed by tenant name' do
+        ActiveRecord::Base.establish_connection(FOO_SPEC)
+
+        expect(ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
+      end
+
+    end
+
+    context 'without setting the current tenant name' do
+
+      it 'establishes a connection keyed by class name' do
+        ActiveRecord::Base.establish_connection(BAZ_SPEC)
+
+        expect(ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
+      end
+
     end
 
   end
@@ -88,12 +106,12 @@ describe ActiveRecord::Base do
 
       it 'returns true' do
         Motel::Manager.current_tenant = 'foo'
-        expect(ActiveRecord::Base.connected?).to be_true
+        expect(ActiveRecord::Base.connected?).to be_truthy
       end
 
       it 'returns false' do
         Motel::Manager.current_tenant = 'bar'
-        expect(ActiveRecord::Base.connected?).to be_false
+        expect(ActiveRecord::Base.connected?).to be_falsey
       end
 
     end
