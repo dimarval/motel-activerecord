@@ -16,8 +16,9 @@ module Motel
             Rails.application.config.motel.tenants_source_configurations
           )
 
-          # Set a current tenant allow to db:create:all task get the connection
-          Motel::Manager.current_tenant = "ActiveRecord::Base"
+          # Set a current tenant allow to db:create:all task establish and
+          # retrieve the connection
+          Motel::Manager.current_tenant ||= self.class
 
           ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
           ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration
@@ -51,8 +52,9 @@ module Motel
 
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Reloader.send(hook) do
-          if Motel::Manager.active_tenants.any?
-            ActiveRecord::Base.clear_reloadable_connections!
+          ActiveRecord::Base.clear_reloadable_connections!
+          # Clear cache of the current tenant with an active connection
+          if Motel::Manager.active_tenants.include?(Motel::Manager.determines_tenant)
             ActiveRecord::Base.clear_cache!
           end
         end
