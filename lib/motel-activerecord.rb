@@ -1,3 +1,4 @@
+require 'motel/active_record'
 require 'motel/connection_adapters'
 require 'motel/lobby'
 require 'motel/manager'
