@@ -7,7 +7,6 @@ module Motel
 
     mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
-    mattr_accessor :current_tenant
 
     class << self
 
@@ -59,6 +58,14 @@ module Motel
 
       def tenants_source
         ::ActiveRecord::Base.connection_handler.tenants_source
+      end
+
+      def current_tenant=(tenant)
+        Thread.current.thread_variable_set(:@current_tenant, tenant)
+      end
+
+      def current_tenant
+        Thread.current.thread_variable_get(:@current_tenant)
       end
 
       def nonexistent_tenant_page=(path_page)

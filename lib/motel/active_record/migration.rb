@@ -6,7 +6,7 @@ module Motel
       module CheckPending
 
         def call(env)
-          return @app.call(env) unless determines_tenant
+          return @app.call(env) unless Motel::Manager.determines_tenant
 
           if connection.supports_migrations?
             mtime = ::ActiveRecord::Migrator.last_migration.mtime.to_i
@@ -23,10 +23,6 @@ module Motel
 
           def connection
             ::ActiveRecord::Base.connection
-          end
-
-          def determines_tenant
-            Motel::Manager.current_tenant || Motel::Manager.default_tenant
           end
 
       end

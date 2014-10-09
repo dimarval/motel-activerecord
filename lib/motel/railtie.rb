@@ -39,10 +39,9 @@ module Motel
     initializer "motel.general_configuration" do
       motel_config = Rails.application.config.motel
 
-      Motel::Manager.nonexistent_tenant_page = motel_config.nonexistent_tenant_page || 'public/404.html'
+      Motel::Manager.nonexistent_tenant_page = motel_config.nonexistent_tenant_page || 'public/404.html' # Deprecated
       Motel::Manager.admission_criteria = motel_config.admission_criteria
       Motel::Manager.default_tenant = motel_config.default_tenant
-      Motel::Manager.current_tenant = motel_config.current_tenant
       Motel::Manager.tenants_source_configurations(motel_config.tenants_source_configurations)
     end
 

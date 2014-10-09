@@ -9,7 +9,7 @@ module Motel
         # Enable the query cache within the block if Active Record is configured.
         # If it's not, it will execute the given block.
         def cache(&block)
-          if (Motel::Manager.current_tenant || Motel::Manager.default_tenant) &&
+          if Motel::Manager.determines_tenant &&
               ::ActiveRecord::Base.connected?
             connection.cache(&block)
           else
@@ -20,7 +20,7 @@ module Motel
         # Disable the query cache within the block if Active Record is configured.
         # If it's not, it will execute the given block.
         def uncached(&block)
-          if (Motel::Manager.current_tenant || Motel::Manager.default_tenant) &&
+          if Motel::Manager.determines_tenant &&
               ::ActiveRecord::Base.connected?
             connection.uncached(&block)
           else
@@ -31,7 +31,7 @@ module Motel
       end
 
       def call(env)
-        if Motel::Manager.current_tenant || Motel::Manager.default_tenant
+        if Motel::Manager.determines_tenant
           connection    = ::ActiveRecord::Base.connection
           enabled       = connection.query_cache_enabled
           connection_id = ::ActiveRecord::Base.connection_id
