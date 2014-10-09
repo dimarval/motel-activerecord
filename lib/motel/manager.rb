@@ -5,7 +5,6 @@ require 'active_record'
 module Motel
   module Manager
 
-    mattr_accessor :nonexistent_tenant_page
     mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
     mattr_accessor :current_tenant
@@ -60,6 +59,16 @@ module Motel
 
       def tenants_source
         ActiveRecord::Base.connection_handler.tenants_source
+      end
+
+      def nonexistent_tenant_page=(path_page)
+        warn "[DEPRECATION] `nonexistent_tenant_page` is deprecated. The page is manage for ActionDispatch::DebugExceptions middleware."
+        @nonexistent_tenant_page = path_page
+      end
+
+      def nonexistent_tenant_page
+        warn "[DEPRECATION] `nonexistent_tenant_page` is deprecated. The page is manage for ActionDispatch::DebugExceptions middleware."
+        @nonexistent_tenant_page
       end
 
     end

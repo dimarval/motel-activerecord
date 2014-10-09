@@ -9,6 +9,11 @@ module Motel
 
     config.motel = ActiveSupport::OrderedOptions.new
 
+    config.action_dispatch.rescue_responses.merge!(
+      'Motel::NoCurrentTenantError' => :not_found,
+      'Motel::NonexistentTenantError' => :not_found
+    )
+
     rake_tasks do
       namespace :db do
         task :load_config do
@@ -41,9 +46,10 @@ module Motel
       Motel::Manager.tenants_source_configurations(motel_config.tenants_source_configurations)
     end
 
+    # Set lobby middleware before all ActiveRecord's middlewares
     initializer "motel.configure_middleware" do |app|
       if !Rails.application.config.motel.disable_middleware && (Rails.env != 'test')
-        app.config.middleware.insert_before ActiveRecord::Migration::CheckPending, Lobby
+        app.config.middleware.insert_after ActionDispatch::Callbacks, Lobby
       end
     end
 
