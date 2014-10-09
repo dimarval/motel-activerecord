@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ActiveRecord::Base do
+describe ::ActiveRecord::Base do
 
   before(:all) do
     Motel::Manager.tenants_source_configurations({source: :default})
@@ -14,8 +14,8 @@ describe ActiveRecord::Base do
   end
 
   after(:each) do
-    ActiveRecord::Base.connection_handler.active_tenants do |tenant|
-      ActiveRecord::Base.connection_handler.remove_connection(tenant)
+    ::ActiveRecord::Base.connection_handler.active_tenants do |tenant|
+      ::ActiveRecord::Base.connection_handler.remove_connection(tenant)
     end
     Motel::Manager.current_tenant = nil
   end
@@ -29,9 +29,9 @@ describe ActiveRecord::Base do
       end
 
       it 'establishes a connection keyed by tenant name' do
-        ActiveRecord::Base.establish_connection(FOO_SPEC)
+        ::ActiveRecord::Base.establish_connection(FOO_SPEC)
 
-        expect(ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
+        expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
       end
 
     end
@@ -39,9 +39,9 @@ describe ActiveRecord::Base do
     context 'without setting the current tenant name' do
 
       it 'establishes a connection keyed by class name' do
-        ActiveRecord::Base.establish_connection(BAZ_SPEC)
+        ::ActiveRecord::Base.establish_connection(BAZ_SPEC)
 
-        expect(ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
+        expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
       end
 
     end
@@ -54,9 +54,9 @@ describe ActiveRecord::Base do
 
       it 'returns a connection pool of current tenant' do
         Motel::Manager.current_tenant = 'foo'
-        pool = ActiveRecord::Base.connection_handler.establish_connection('foo')
+        pool = ::ActiveRecord::Base.connection_handler.establish_connection('foo')
 
-        expect(ActiveRecord::Base.connection_pool).to eq pool
+        expect(::ActiveRecord::Base.connection_pool).to eq pool
       end
 
     end
@@ -65,7 +65,7 @@ describe ActiveRecord::Base do
 
       it 'rises an error' do
         Motel::Manager.current_tenant = nil
-        expect{ActiveRecord::Base.connection_pool}.to raise_error Motel::NoCurrentTenantError
+        expect{::ActiveRecord::Base.connection_pool}.to raise_error Motel::NoCurrentTenantError
       end
 
     end
@@ -78,9 +78,9 @@ describe ActiveRecord::Base do
 
       it 'returns a connection of current tenant' do
         Motel::Manager.current_tenant = 'foo'
-        pool = ActiveRecord::Base.connection_handler.establish_connection('foo')
+        pool = ::ActiveRecord::Base.connection_handler.establish_connection('foo')
 
-        expect(ActiveRecord::Base.retrieve_connection).to eq pool.connection
+        expect(::ActiveRecord::Base.retrieve_connection).to eq pool.connection
       end
 
     end
@@ -89,7 +89,7 @@ describe ActiveRecord::Base do
 
       it 'rises an error' do
         Motel::Manager.current_tenant = nil
-        expect{ActiveRecord::Base.retrieve_connection}.to raise_error Motel::NoCurrentTenantError
+        expect{::ActiveRecord::Base.retrieve_connection}.to raise_error Motel::NoCurrentTenantError
       end
 
     end
@@ -99,19 +99,19 @@ describe ActiveRecord::Base do
   describe '.connected?' do
 
     before(:each) do
-      ActiveRecord::Base.connection_handler.retrieve_connection('foo')
+      ::ActiveRecord::Base.connection_handler.retrieve_connection('foo')
     end
 
     context 'current tenant established' do
 
       it 'returns true' do
         Motel::Manager.current_tenant = 'foo'
-        expect(ActiveRecord::Base.connected?).to be_truthy
+        expect(::ActiveRecord::Base.connected?).to be_truthy
       end
 
       it 'returns false' do
         Motel::Manager.current_tenant = 'bar'
-        expect(ActiveRecord::Base.connected?).to be_falsey
+        expect(::ActiveRecord::Base.connected?).to be_falsey
       end
 
     end
@@ -120,7 +120,7 @@ describe ActiveRecord::Base do
 
       it 'rises an error' do
         Motel::Manager.current_tenant = nil
-        expect{ActiveRecord::Base.connected?}.to raise_error Motel::NoCurrentTenantError
+        expect{::ActiveRecord::Base.connected?}.to raise_error Motel::NoCurrentTenantError
       end
 
     end
@@ -132,10 +132,10 @@ describe ActiveRecord::Base do
     context 'current tenant established' do
 
       it 'removes connection' do
-        ActiveRecord::Base.connection_handler.establish_connection('foo')
+        ::ActiveRecord::Base.connection_handler.establish_connection('foo')
         Motel::Manager.current_tenant = 'foo'
-        ActiveRecord::Base.remove_connection
-        expect(ActiveRecord::Base.connection_handler.active_tenants).not_to include('foo')
+        ::ActiveRecord::Base.remove_connection
+        expect(::ActiveRecord::Base.connection_handler.active_tenants).not_to include('foo')
       end
 
     end
@@ -144,7 +144,7 @@ describe ActiveRecord::Base do
 
       it 'rises an error' do
         Motel::Manager.current_tenant = nil
-        expect{ActiveRecord::Base.remove_connection}.to raise_error Motel::NoCurrentTenantError
+        expect{::ActiveRecord::Base.remove_connection}.to raise_error Motel::NoCurrentTenantError
       end
 
     end
@@ -154,7 +154,7 @@ describe ActiveRecord::Base do
   describe '.arel_engine' do
 
     it 'returns a ActiveRecord::Base class' do
-      expect(ActiveRecord::Base.arel_engine).to eq ActiveRecord::Base
+      expect(::ActiveRecord::Base.arel_engine).to eq ::ActiveRecord::Base
     end
 
   end
@@ -166,7 +166,7 @@ describe ActiveRecord::Base do
       it 'returns the current tenant' do
         Motel::Manager.current_tenant = 'foo'
 
-        expect(ActiveRecord::Base.current_tenant).to eq 'foo'
+        expect(::ActiveRecord::Base.current_tenant).to eq 'foo'
       end
 
     end
@@ -176,7 +176,7 @@ describe ActiveRecord::Base do
       it 'rises an error' do
         Motel::Manager.current_tenant = nil
 
-        expect{ActiveRecord::Base.current_tenant}.to raise_error Motel::NoCurrentTenantError
+        expect{::ActiveRecord::Base.current_tenant}.to raise_error Motel::NoCurrentTenantError
       end
 
     end

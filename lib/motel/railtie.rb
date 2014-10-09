@@ -25,14 +25,14 @@ module Motel
           # retrieve the connection
           Motel::Manager.current_tenant ||= self.class
 
-          ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
-          ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration
-          ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
+          ::ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
+          ::ActiveRecord::Base.configurations = ::ActiveRecord::Tasks::DatabaseTasks.database_configuration
+          ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
         end
       end
     end
 
-    ActiveRecord::Railtie.initializers.delete_if do |i|
+    ::ActiveRecord::Railtie.initializers.delete_if do |i|
       INIT_TO_DELETE.include?(i.name)
     end
 
@@ -58,10 +58,10 @@ module Motel
 
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Reloader.send(hook) do
-          ActiveRecord::Base.clear_reloadable_connections!
+          ::ActiveRecord::Base.clear_reloadable_connections!
           # Clear cache of the current tenant with an active connection
           if Motel::Manager.active_tenants.include?(Motel::Manager.determines_tenant)
-            ActiveRecord::Base.clear_cache!
+            ::ActiveRecord::Base.clear_cache!
           end
         end
       end

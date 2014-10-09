@@ -17,7 +17,7 @@ module Motel
 
         source_instance = source_class.new(config)
 
-        ActiveRecord::Base.connection_handler.tenants_source = source_instance
+        ::ActiveRecord::Base.connection_handler.tenants_source = source_instance
       end
 
       def tenants
@@ -38,19 +38,19 @@ module Motel
       end
 
       def update_tenant(name, spec)
-        ActiveRecord::Base.remove_connection(name)
+        ::ActiveRecord::Base.remove_connection(name)
         tenants_source.update_tenant(name, spec)
         tenant(name)
       end
 
       def delete_tenant(name)
-        ActiveRecord::Base.remove_connection(name)
+        ::ActiveRecord::Base.remove_connection(name)
         tenants_source.delete_tenant(name)
         !tenant?(name)
       end
 
       def active_tenants
-        ActiveRecord::Base.connection_handler.active_tenants
+        ::ActiveRecord::Base.connection_handler.active_tenants
       end
 
       def determines_tenant
@@ -58,7 +58,7 @@ module Motel
       end
 
       def tenants_source
-        ActiveRecord::Base.connection_handler.tenants_source
+        ::ActiveRecord::Base.connection_handler.tenants_source
       end
 
       def nonexistent_tenant_page=(path_page)

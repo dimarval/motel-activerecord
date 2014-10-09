@@ -16,7 +16,7 @@ module Motel
         def spec(config)
           spec = resolve(config).symbolize_keys
 
-          raise(ActiveRecord::AdapterNotSpecified, "database configuration does not specify adapter") unless spec.key?(:adapter)
+          raise(::ActiveRecord::AdapterNotSpecified, "database configuration does not specify adapter") unless spec.key?(:adapter)
 
           path_to_adapter = "active_record/connection_adapters/#{spec[:adapter]}_adapter"
           begin
@@ -28,7 +28,7 @@ module Motel
           end
 
           adapter_method = "#{spec[:adapter]}_connection"
-          ActiveRecord::ConnectionAdapters::ConnectionSpecification.new(spec, adapter_method)
+          ::ActiveRecord::ConnectionAdapters::ConnectionSpecification.new(spec, adapter_method)
         end
 
         private
@@ -36,7 +36,7 @@ module Motel
           def resolve(config)
             case config
             when nil
-              raise ActiveRecord::AdapterNotSpecified
+              raise ::ActiveRecord::AdapterNotSpecified
             when String, Symbol
               resolve_string_connection config.to_s
             when Hash
