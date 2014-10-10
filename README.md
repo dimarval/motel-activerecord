@@ -45,7 +45,7 @@ In your app/application.rb file write this:
 config.motel.tenants_source_configurations = {
   source:      :database,
   source_spec: { adapter: "sqlite3", database: "db/tenants.sqlite3" },
-  table_name:  'tenant'
+  table_name:  "tenant"
 }
 ```
 
