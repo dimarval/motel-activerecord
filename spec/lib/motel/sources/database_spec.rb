@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Motel::Sources::Database do
 
   before(:all) do
-    @klass = Class.new(ActiveRecord::Base) { def self.name; 'klass'; end }
+    @klass = Class.new(::ActiveRecord::Base) { def self.name; 'klass'; end }
 
     resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
     @handler = Motel::ConnectionAdapters::ConnectionHandler.new

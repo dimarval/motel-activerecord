@@ -9,6 +9,11 @@ module Motel
 
     config.motel = ActiveSupport::OrderedOptions.new
 
+    config.action_dispatch.rescue_responses.merge!(
+      'Motel::NoCurrentTenantError' => :not_found,
+      'Motel::NonexistentTenantError' => :not_found
+    )
+
     rake_tasks do
       namespace :db do
         task :load_config do
@@ -20,30 +25,30 @@ module Motel
           # retrieve the connection
           Motel::Manager.current_tenant ||= self.class
 
-          ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
-          ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration
-          ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
+          ::ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
+          ::ActiveRecord::Base.configurations = ::ActiveRecord::Tasks::DatabaseTasks.database_configuration
+          ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
         end
       end
     end
 
-    ActiveRecord::Railtie.initializers.delete_if do |i|
+    ::ActiveRecord::Railtie.initializers.delete_if do |i|
       INIT_TO_DELETE.include?(i.name)
     end
 
     initializer "motel.general_configuration" do
       motel_config = Rails.application.config.motel
 
-      Motel::Manager.nonexistent_tenant_page = motel_config.nonexistent_tenant_page || 'public/404.html'
+      Motel::Manager.nonexistent_tenant_page = motel_config.nonexistent_tenant_page || 'public/404.html' # Deprecated
       Motel::Manager.admission_criteria = motel_config.admission_criteria
       Motel::Manager.default_tenant = motel_config.default_tenant
-      Motel::Manager.current_tenant = motel_config.current_tenant
       Motel::Manager.tenants_source_configurations(motel_config.tenants_source_configurations)
     end
 
+    # Set lobby middleware before all ActiveRecord's middlewares
     initializer "motel.configure_middleware" do |app|
       if !Rails.application.config.motel.disable_middleware && (Rails.env != 'test')
-        app.config.middleware.insert_before ActiveRecord::Migration::CheckPending, Lobby
+        app.config.middleware.insert_after ActionDispatch::Callbacks, Lobby
       end
     end
 
@@ -52,10 +57,10 @@ module Motel
 
       ActiveSupport.on_load(:active_record) do
         ActionDispatch::Reloader.send(hook) do
-          ActiveRecord::Base.clear_reloadable_connections!
+          ::ActiveRecord::Base.clear_reloadable_connections!
           # Clear cache of the current tenant with an active connection
           if Motel::Manager.active_tenants.include?(Motel::Manager.determines_tenant)
-            ActiveRecord::Base.clear_cache!
+            ::ActiveRecord::Base.clear_cache!
           end
         end
       end
