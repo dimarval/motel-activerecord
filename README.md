@@ -178,8 +178,8 @@ Motel::Manager.current_tenant = "foo"
 ```
 
 The switching of the tenant is not only based setting the variable
-of the current tenant also by the environment variable or tenant
-default. The hierarchy for tenant selection occurs in the following
+of the current tenant also by the environment variable or default
+tenant. The hierarchy for tenant selection occurs in the following
 order.
 
 ```ruby
