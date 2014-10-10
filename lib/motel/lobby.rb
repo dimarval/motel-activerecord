@@ -10,23 +10,15 @@ module Motel
 
     def call(env)
       request = Rack::Request.new(env)
-
       name = tenant_name(request)
 
-      if name
-        if Motel::Manager.tenant?(name)
-          Motel::Manager.current_tenant = name
-          @app.call(env)
-        else
-          path = Motel::Manager.nonexistent_tenant_page
-          file = File.expand_path(path) if path
-          body = (File.exists?(file.to_s)) ? File.read(file) : "Nonexistent #{name} tenant"
-          [404, {"Content-Type" => "text/html", "Content-Length" => body.size.to_s}, [body]]
-        end
+      if name && Motel::Manager.tenant?(name)
+        Motel::Manager.current_tenant = name
       else
         Motel::Manager.current_tenant = nil
-        @app.call(env)
       end
+
+      @app.call(env)
     end
 
     private

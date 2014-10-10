@@ -19,8 +19,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'activerecord', '~> 4.0'
   s.add_dependency 'activesupport', '~> 4.0'
   s.add_dependency 'redis', '~> 3.0.0'
+  s.add_dependency 'rack', '~> 1.0'
 
   s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'sqlite3', '~> 1.0'
+  s.add_development_dependency 'rack-test'
+
 end
 

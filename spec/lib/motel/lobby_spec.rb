@@ -19,7 +19,6 @@ describe Motel::Lobby do
   after(:all) do
     Motel::Manager.delete_tenant('foo')
     Motel::Manager.admission_criteria = nil #sets default
-    Motel::Manager.nonexistent_tenant_page = nil #sets default
   end
 
   describe '#call' do
@@ -58,37 +57,16 @@ describe Motel::Lobby do
             @url = 'http://bar.test.com'
           end
 
-          it 'returns 404 code' do
+          it 'sets the current tenant on nil' do
             request @url
 
-            expect(last_response.status).to eq 404
+            expect(Motel::Manager.current_tenant).to be_nil
           end
 
-          context 'with default nonexistent tenant message' do
+          it 'response is ok' do
+            request @url
 
-            it 'returns default message on body' do
-              Motel::Manager.nonexistent_tenant_page = nil
-              request @url
-
-              expect(last_response.body).to eq "Nonexistent bar tenant"
-            end
-
-          end
-
-          context 'specifying the path of the page with the nonexistent tenant message' do
-
-            it 'returns default message on body' do
-              message = '<h1>Noexistent tenant<h1>'
-              file = Tempfile.new(['status_404', '.html'], TEMP_DIR)
-              file.write(message)
-              file.close
-
-              Motel::Manager.nonexistent_tenant_page = file.path
-              request @url
-
-              expect(last_response.body).to eq message
-            end
-
+            expect(last_response).to be_ok
           end
 
         end

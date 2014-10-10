@@ -3,7 +3,7 @@ require 'active_record'
 module Motel
   module ConnectionAdapters
 
-    class ConnectionHandler < ActiveRecord::ConnectionAdapters::ConnectionHandler
+    class ConnectionHandler < ::ActiveRecord::ConnectionAdapters::ConnectionHandler
 
       attr_accessor :tenants_source
 
@@ -21,7 +21,7 @@ module Motel
       def establish_connection(tenant_name, spec = nil)
         spec ||= connection_especification(tenant_name)
         @class_to_pool.clear
-        owner_to_pool[tenant_name] = ActiveRecord::ConnectionAdapters::ConnectionPool.new(spec)
+        owner_to_pool[tenant_name] = ::ActiveRecord::ConnectionAdapters::ConnectionPool.new(spec)
       end
 
       def retrieve_connection(tenant_name)
@@ -82,8 +82,8 @@ module Motel
           resolver = ConnectionSpecification::Resolver.new
           spec = resolver.spec(tenants_source.tenant(tenant_name))
 
-          unless ActiveRecord::Base.respond_to?(spec.adapter_method)
-            raise ActiveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
+          unless ::ActiveRecord::Base.respond_to?(spec.adapter_method)
+            raise ::ActiveRecord::AdapterNotFound, "database configuration specifies nonexistent #{spec.config[:adapter]} adapter"
           end
 
           spec

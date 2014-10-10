@@ -3,17 +3,17 @@ require 'spec_helper'
 describe Motel::Manager do
 
   before(:all) do
-    ActiveRecord::Base.connection_handler = begin
+    ::ActiveRecord::Base.connection_handler = begin
       Motel::ConnectionAdapters::ConnectionHandler.new
     end
     @manager = Motel::Manager
   end
 
   before(:each) do
-    ActiveRecord::Base.connection_handler.tenants_source = begin
+    ::ActiveRecord::Base.connection_handler.tenants_source = begin
       Motel::Sources::Default.new
     end
-    @tenants_source = ActiveRecord::Base.connection_handler.tenants_source
+    @tenants_source = ::ActiveRecord::Base.connection_handler.tenants_source
     @tenants_source.add_tenant('foo', FOO_SPEC)
     @tenants_source.add_tenant('bar', BAR_SPEC)
   end
@@ -24,8 +24,8 @@ describe Motel::Manager do
     @manager.default_tenant = nil
 
     # Remove all connections tenant
-    ActiveRecord::Base.connection_handler.active_tenants do |tenant|
-      ActiveRecord::Base.connection_handler.remove_connection(tenant)
+    ::ActiveRecord::Base.connection_handler.active_tenants do |tenant|
+      ::ActiveRecord::Base.connection_handler.remove_connection(tenant)
     end
   end
 
@@ -123,7 +123,7 @@ describe Motel::Manager do
     it 'returns true if tenant baz does exist' do
       resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
       spec = resolver.spec(BAZ_SPEC)
-      handler = ActiveRecord::Base.connection_handler
+      handler = ::ActiveRecord::Base.connection_handler
       handler.establish_connection('baz', spec)
       expect(@manager.tenant?('baz')).to be_truthy
     end
@@ -176,10 +176,10 @@ describe Motel::Manager do
 
     it 'removes connection of tenant' do
 
-      ActiveRecord::Base.connection_handler.establish_connection('foo')
+      ::ActiveRecord::Base.connection_handler.establish_connection('foo')
       @manager.delete_tenant('foo')
 
-      expect(ActiveRecord::Base.connection_handler.active_tenants).not_to include('foo')
+      expect(::ActiveRecord::Base.connection_handler.active_tenants).not_to include('foo')
     end
 
   end
@@ -187,7 +187,7 @@ describe Motel::Manager do
   describe '#active_tenants' do
 
     it 'returns active tenans' do
-      ActiveRecord::Base.connection_handler.establish_connection('foo')
+      ::ActiveRecord::Base.connection_handler.establish_connection('foo')
       expect(@manager.active_tenants).to include('foo')
     end
 
