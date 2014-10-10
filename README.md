@@ -44,7 +44,7 @@ In your app/application.rb file write this:
 ```ruby
 config.motel.tenants_source_configurations = {
   source:      :database,
-  source_spec: { adapter: 'sqlite3', database: 'db/tenants.sqlite3' },
+  source_spec: { adapter: "sqlite3", database: "db/tenants.sqlite3" },
   table_name:  'tenant'
 }
 ```
@@ -53,13 +53,13 @@ You can specify the source by providing a hash of the
 connection specification. Example:
 
 ```ruby
-source_spec: {adapter: 'sqlite3', database: 'db/tenants.sqlite3'}
+source_spec: { adapter: "sqlite3", database: "db/tenants.sqlite3" }
 ```
 
 Table name where are stored the connection details of tenants:
 
 ```ruby
-table_name: 'tenant'
+table_name: "tenant"
 ```
 
 Note: The columns of the table must contain connection details and
@@ -88,7 +88,7 @@ config.motel.tenants_source_configurations = {
   source:   :redis,
   host:     127.0.0.1,
   port:     6380,
-  password: 'redis_password'
+  password: "redis_password"
 }
 ```
 To connect to Redis listening on a Unix socket, try use 'path'
@@ -102,7 +102,7 @@ If you want to assing dirently the tenants specificactions you can do it:
 
 ```ruby
 config.motel.tenants_source_configurations = {
-  configurations: { 'foo' => { adapter: 'sqlite3', database: 'db/foo.sqlite3' }}
+  configurations: { "foo" => { adapter: "sqlite3", database: "db/foo.sqlite3" } }
 }
 ```
 
@@ -123,7 +123,7 @@ Set the `TENANT` environment variable to run the rake task on a
 specific tenant.
 
 ```ruby
-$ TENANT='foo' rake db:migrate
+$ TENANT=foo rake db:migrate
 ```
 
 ### More configurations
@@ -131,7 +131,7 @@ $ TENANT='foo' rake db:migrate
 You can assign a default tenant if the current tenant is null:
 
 ```ruby
-config.motel.default_tenant = 'my_default_tenant'
+config.motel.default_tenant = "my_default_tenant"
 ```
 
 Tenants switching is done via the subdomain of the url, you can
@@ -140,7 +140,7 @@ string. Example, to get the tenant `foo` from the follow url
 `http://www.example.com/foo/index` you should write:
 
 ```ruby
-config.motel.admission_criteria = '\/(\w*)\/'
+config.motel.admission_criteria = "\/(\w*)\/"
 ```
 
 If you do not want the automatic switching of tenants by url you must
@@ -148,13 +148,6 @@ disable the middleware:
 
 ```ruby
 config.motel.disable_middleware = true
-```
-
-Path of the html page to show if tenant doesn't exist. Default is
-`public/404.html`.
-
-```ruby
-config.motel.nonexistent_tenant_page = 'new_path'
 ```
 
 ## Use without Rails
@@ -167,9 +160,49 @@ use the method `tenants_source_configurations` of `Motel::Manager`:
 ```ruby
 Motel::Manager.tenants_source_configurations({
   source:      :database,
-  source_spec: { adapter: 'sqlite3', database: 'db/tenants.sqlite3' },
+  source_spec: { adapter: "sqlite3", database: "db/tenants.sqlite3" },
   table_name:  'tenant'
 })
+```
+
+# Usage
+
+## Switching tenants
+
+If you're using Rails the tenant switching occurs automatically
+through the Lobby middleware, otherwise you must set the current
+tenant:
+
+```ruby
+Motel::Manager.current_tenant = "foo"
+```
+
+The switching of the tenant is not only based setting the variable
+of the current tenant also by the environment variable or tenant
+default. The hierarchy for tenant selection occurs in the following
+order.
+
+```ruby
+ENV["TENANT"] || Motel::Manager.current_tenant || Motel::Manager.default_tenant
+```
+
+Usage example:
+
+```ruby
+  Motel::Manager.current_tenant = "foo"
+
+  FooBar.create(name: "Foo")
+  # => #<FooBar id: 1, name: "Foo">
+
+  Motel::Manager.current_tenant = "bar"
+
+  FooBar.all
+  # => #<ActiveRecord::Relation []>
+
+  Motel::Manager.current_tenant = "foo"
+
+  FooBar.all
+  # => #<ActiveRecord::Relation [#<FooBar id: 1, name: "Foo">]>
 ```
 
 # Available methods
@@ -190,12 +223,6 @@ Set a default tenant
 
 ```ruby
 Motel::Manager.default_tenant
-```
-
-Set the html page to show if tenant doesn't exist
-
-```ruby
-Motel::Manager.nonexistent_tenant_page
 ```
 
 Set a current tenant
