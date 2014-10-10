@@ -31,6 +31,6 @@ module Motel
 end
 
 class ActiveRecord::Migration::CheckPending
-  include Motel::ActiveRecord::Migration::CheckPending
+  prepend Motel::ActiveRecord::Migration::CheckPending
 end
 

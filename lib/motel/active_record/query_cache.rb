@@ -47,7 +47,10 @@ module Motel
           @app.call(env)
         end
       rescue Exception => e
-        restore_query_cache_settings(connection_id, enabled)
+        if Motel::Manager.determines_tenant
+          restore_query_cache_settings(connection_id, enabled)
+        end
+
         raise e
       end
 
@@ -61,10 +64,10 @@ class ::ActiveRecord::Base
 end
 
 class ::ActiveRecord::QueryCache
-  include Motel::ActiveRecord::QueryCache
+  prepend Motel::ActiveRecord::QueryCache
 end
 
 class ::ActiveRecord::ConnectionAdapters::AbstractAdapter
-  include Motel::ActiveRecord::QueryCache::ClassMethods
+  prepend Motel::ActiveRecord::QueryCache::ClassMethods
 end
 
