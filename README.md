@@ -126,30 +126,6 @@ specific tenant.
 $ TENANT=foo rake db:migrate
 ```
 
-### More configurations
-
-You can assign a default tenant if the current tenant is null:
-
-```ruby
-config.motel.default_tenant = "my_default_tenant"
-```
-
-Tenants switching is done via the subdomain of the url, you can
-specify a criteria to identify the tenant providing a regex as a
-string. Example, to get the tenant `foo` from the follow url
-`http://www.example.com/foo/index` you should write:
-
-```ruby
-config.motel.admission_criteria = "\/(\w*)\/"
-```
-
-If you do not want the automatic switching of tenants by url you must
-disable the middleware:
-
-```ruby
-config.motel.disable_middleware = true
-```
-
 ## Use without Rails
 
 ### Specifying the source of tenants
@@ -169,9 +145,7 @@ Motel::Manager.tenants_source_configurations({
 
 ## Switching tenants
 
-If you're using Rails the tenant switching occurs automatically
-through the Lobby middleware, otherwise you must set the current
-tenant:
+You can switch between tenants setting the current tenant variable:
 
 ```ruby
 Motel::Manager.current_tenant = "foo"
@@ -211,12 +185,6 @@ Set a tenats source configurations
 
 ```ruby
 Motel::Manager.tenants_source_configurations(config)
-```
-
-Set the admission criteria for the middleware
-
-```ruby
-Motel::Manager.admission_criteria
 ```
 
 Set a default tenant
