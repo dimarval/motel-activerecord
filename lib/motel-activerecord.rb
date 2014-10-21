@@ -1,4 +1,3 @@
-require 'motel/lobby'
 require 'motel/manager'
 require 'motel/sources'
 require 'motel/errors'

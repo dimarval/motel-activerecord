@@ -39,17 +39,8 @@ module Motel
     initializer "motel.general_configuration" do
       motel_config = Rails.application.config.motel
 
-      Motel::Manager.nonexistent_tenant_page = motel_config.nonexistent_tenant_page || 'public/404.html' # Deprecated
-      Motel::Manager.admission_criteria = motel_config.admission_criteria
       Motel::Manager.default_tenant = motel_config.default_tenant
       Motel::Manager.tenants_source_configurations(motel_config.tenants_source_configurations)
-    end
-
-    # Set lobby middleware before all ActiveRecord's middlewares
-    initializer "motel.configure_middleware" do |app|
-      if !Rails.application.config.motel.disable_middleware && (Rails.env != 'test')
-        app.config.middleware.insert_after ActionDispatch::Callbacks, Lobby
-      end
     end
 
     initializer "active_record.set_reloader_hooks" do |app|

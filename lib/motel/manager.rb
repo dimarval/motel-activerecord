@@ -5,7 +5,6 @@ require 'active_record'
 module Motel
   module Manager
 
-    mattr_accessor :admission_criteria
     mattr_accessor :default_tenant
 
     class << self
@@ -66,16 +65,6 @@ module Motel
 
       def current_tenant
         Thread.current.thread_variable_get(:@current_tenant)
-      end
-
-      def nonexistent_tenant_page=(path_page)
-        warn "[DEPRECATION] `nonexistent_tenant_page` is deprecated. The page is manage for ActionDispatch::DebugExceptions middleware."
-        @nonexistent_tenant_page = path_page
-      end
-
-      def nonexistent_tenant_page
-        warn "[DEPRECATION] `nonexistent_tenant_page` is deprecated. The page is manage for ActionDispatch::DebugExceptions middleware."
-        @nonexistent_tenant_page
       end
 
     end
