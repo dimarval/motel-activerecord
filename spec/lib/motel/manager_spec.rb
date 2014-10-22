@@ -193,7 +193,7 @@ describe Motel::Manager do
 
   end
 
-  describe '#determines_tenant' do
+  describe '#current_tenant' do
 
     context 'tenant environment variable, current tenant and default tenant are set' do
 
@@ -203,7 +203,7 @@ describe Motel::Manager do
 
         @manager.switch_tenant('bar')
 
-        expect(@manager.determines_tenant).to eq ENV['TENANT']
+        expect(@manager.current_tenant).to eq ENV['TENANT']
       end
 
     end
@@ -216,7 +216,7 @@ describe Motel::Manager do
 
         @manager.switch_tenant('bar')
 
-        expect(@manager.determines_tenant).to eq @manager.current_tenant
+        expect(@manager.current_tenant).to eq 'bar'
       end
 
     end
@@ -229,7 +229,7 @@ describe Motel::Manager do
 
         @manager.switch_tenant(nil)
 
-        expect(@manager.determines_tenant).to eq @manager.default_tenant
+        expect(@manager.current_tenant).to eq 'baz'
       end
 
     end

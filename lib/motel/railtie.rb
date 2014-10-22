@@ -27,7 +27,7 @@ module Motel
 
           ::ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
           ::ActiveRecord::Base.configurations = ::ActiveRecord::Tasks::DatabaseTasks.database_configuration
-          ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
+          ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.current_tenant
         end
       end
     end
@@ -50,7 +50,7 @@ module Motel
         ActionDispatch::Reloader.send(hook) do
           ::ActiveRecord::Base.clear_reloadable_connections!
           # Clear cache of the current tenant with an active connection
-          if Motel::Manager.active_tenants.include?(Motel::Manager.determines_tenant)
+          if Motel::Manager.active_tenants.include?(Motel::Manager.current_tenant)
             ::ActiveRecord::Base.clear_cache!
           end
         end

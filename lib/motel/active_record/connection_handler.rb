@@ -44,7 +44,7 @@ module Motel
         end
 
         def current_tenant
-          Motel::Manager.determines_tenant or raise Motel::NoCurrentTenantError
+          Motel::Manager.current_tenant or raise Motel::NoCurrentTenantError
         end
 
       end

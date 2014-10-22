@@ -55,21 +55,26 @@ module Motel
         ::ActiveRecord::Base.connection_handler.active_tenants
       end
 
-      def determines_tenant
-        ENV['TENANT'] || current_tenant || default_tenant
+      def current_tenant
+        ENV['TENANT'] ||
+        Thread.current.thread_variable_get(:@current_tenant) ||
+        default_tenant
       end
 
       def tenants_source
         ::ActiveRecord::Base.connection_handler.tenants_source
       end
 
+      # Deprecated methods
+      # -------------------------------------------------------------------------------------------
+      def determines_tenant
+        current_tenant
+        warn "[DEPRECATION] `determines_tenant` is deprecated. Please use `current_tenant` instead."
+      end
+
       def current_tenant=(name)
         switch_tenant(name)
         warn "[DEPRECATION] `current_tenant=` is deprecated. Please use `switch_tenant` instead."
-      end
-
-      def current_tenant
-        Thread.current.thread_variable_get(:@current_tenant)
       end
 
     end
