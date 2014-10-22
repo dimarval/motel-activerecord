@@ -47,6 +47,10 @@ module Motel
         !tenant?(name)
       end
 
+      def switch_tenant(name)
+        Thread.current.thread_variable_set(:@current_tenant, name)
+      end
+
       def active_tenants
         ::ActiveRecord::Base.connection_handler.active_tenants
       end
@@ -59,8 +63,9 @@ module Motel
         ::ActiveRecord::Base.connection_handler.tenants_source
       end
 
-      def current_tenant=(tenant)
-        Thread.current.thread_variable_set(:@current_tenant, tenant)
+      def current_tenant=(name)
+        switch_tenant(name)
+        warn "[DEPRECATION] `current_tenant=` is deprecated. Please use `switch_tenant` instead."
       end
 
       def current_tenant
