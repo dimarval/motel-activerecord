@@ -20,7 +20,7 @@ describe Motel::Manager do
 
   after(:each) do
     ENV['TENANT'] = nil
-    @manager.current_tenant = nil
+    @manager.switch_tenant(nil)
     @manager.default_tenant = nil
 
     # Remove all connections tenant
@@ -199,8 +199,9 @@ describe Motel::Manager do
 
       it 'returns tenant enviroment variable' do
         ENV['TENANT'] = 'foo'
-        @manager.current_tenant = 'bar'
         @manager.default_tenant = 'baz'
+
+        @manager.switch_tenant('bar')
 
         expect(@manager.determines_tenant).to eq ENV['TENANT']
       end
@@ -211,8 +212,9 @@ describe Motel::Manager do
 
       it 'returns tenant enviroment variable' do
         ENV['TENANT'] = nil
-        @manager.current_tenant = 'bar'
         @manager.default_tenant = 'baz'
+
+        @manager.switch_tenant('bar')
 
         expect(@manager.determines_tenant).to eq @manager.current_tenant
       end
@@ -223,8 +225,9 @@ describe Motel::Manager do
 
       it 'returns tenant enviroment variable' do
         ENV['TENANT'] = nil
-        @manager.current_tenant = nil
         @manager.default_tenant = 'baz'
+
+        @manager.switch_tenant(nil)
 
         expect(@manager.determines_tenant).to eq @manager.default_tenant
       end

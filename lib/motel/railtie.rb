@@ -23,7 +23,7 @@ module Motel
 
           # Set a current tenant allow to db:create:all task establish and
           # retrieve the connection
-          Motel::Manager.current_tenant ||= self.class
+          Motel::Manager.switch_tenant(self.class) unless Motel::Manager.current_tenant
 
           ::ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
           ::ActiveRecord::Base.configurations = ::ActiveRecord::Tasks::DatabaseTasks.database_configuration
