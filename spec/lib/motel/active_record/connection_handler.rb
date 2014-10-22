@@ -22,7 +22,7 @@ describe ::ActiveRecord::Base do
 
   describe '.establish_connection' do
 
-    context 'where there are a current tenant select' do
+    context 'current tenant established' do
 
       before(:each) do
         Motel::Manager.switch_tenant('foo')
@@ -36,7 +36,7 @@ describe ::ActiveRecord::Base do
 
     end
 
-    context 'without setting the current tenant name' do
+    context 'current tenant not established' do
 
       it 'establishes a connection keyed by class name' do
         ::ActiveRecord::Base.establish_connection(BAZ_SPEC)
