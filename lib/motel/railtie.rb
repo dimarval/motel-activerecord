@@ -1,6 +1,8 @@
 require 'active_support/ordered_options'
 require 'motel/manager'
+require 'active_record'
 require 'rails'
+require 'active_model/railtie'
 
 module Motel
 
@@ -15,21 +17,21 @@ module Motel
     )
 
     rake_tasks do
+      require "active_record/base"
+
       namespace :db do
         task :load_config do
           Motel::Manager.tenants_source_configurations(
             Rails.application.config.motel.tenants_source_configurations
           )
 
-          # Set a current tenant allow to db:create:all task establish and
-          # retrieve the connection
-          Motel::Manager.switch_tenant(self.class) unless Motel::Manager.current_tenant
-
           ::ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
           ::ActiveRecord::Base.configurations = ::ActiveRecord::Tasks::DatabaseTasks.database_configuration
           ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.current_tenant
         end
       end
+
+      load "motel/active_record/railties/databases.rake"
     end
 
     ::ActiveRecord::Railtie.initializers.delete_if do |i|
