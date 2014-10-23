@@ -65,18 +65,6 @@ module Motel
         ::ActiveRecord::Base.connection_handler.tenants_source
       end
 
-      # Deprecated methods
-      # -------------------------------------------------------------------------------------------
-      def determines_tenant
-        current_tenant
-        warn "[DEPRECATION] `determines_tenant` is deprecated. Please use `current_tenant` instead."
-      end
-
-      def current_tenant=(name)
-        switch_tenant(name)
-        warn "[DEPRECATION] `current_tenant=` is deprecated. Please use `switch_tenant` instead."
-      end
-
     end
 
   end
