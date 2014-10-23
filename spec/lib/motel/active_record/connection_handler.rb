@@ -18,30 +18,59 @@ describe ::ActiveRecord::Base do
       ::ActiveRecord::Base.connection_handler.remove_connection(tenant)
     end
     Motel::Manager.switch_tenant(nil)
+    ENV['TENANT'] = nil
   end
 
   describe '.establish_connection' do
 
-    context 'current tenant established' do
+    context 'with a connection specification' do
 
-      before(:each) do
-        Motel::Manager.switch_tenant('foo')
+      context 'and the environment variable of the current is established' do
+
+        before(:each) do
+          ENV['TENANT'] = 'foo'
+        end
+
+        it 'establishes a connection keyed by tenant name' do
+          ::ActiveRecord::Base.establish_connection(FOO_SPEC)
+
+          expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
+        end
+
       end
 
-      it 'establishes a connection keyed by tenant name' do
-        ::ActiveRecord::Base.establish_connection(FOO_SPEC)
+      context 'and the environment variable of the current is not established' do
 
-        expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
+        it 'establishes a connection keyed by name of the class' do
+          ::ActiveRecord::Base.establish_connection(FOO_SPEC)
+
+          expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
+        end
+
       end
 
     end
 
-    context 'current tenant not established' do
+    context 'with a tenant name' do
 
-      it 'establishes a connection keyed by class name' do
-        ::ActiveRecord::Base.establish_connection(BAZ_SPEC)
+      context 'existent' do
 
-        expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('ActiveRecord::Base')
+        it 'establishes a connection keyed by tenant name' do
+          ::ActiveRecord::Base.establish_connection('foo')
+
+          expect(::ActiveRecord::Base.connection_handler.active_tenants).to include('foo')
+        end
+
+      end
+
+      context 'nonexistent' do
+
+        it 'raises an error' do
+          expect{
+            ::ActiveRecord::Base.establish_connection('baz')
+          }.to raise_error Motel::NonexistentTenantError
+        end
+
       end
 
     end
