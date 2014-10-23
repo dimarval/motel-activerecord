@@ -8,6 +8,7 @@ connections to multiple databases, one for each tenant.
 
 * Adds multi-tenant functionality to ActiveRecord.
 * Multiple databases, one for each tenant.
+* Databases of tenants may be in different locations.
 * Tenant connection details are stored keying them by the name on a database or redis server.
 * Use with or without Rails.
 
@@ -126,6 +127,20 @@ specific tenant.
 $ TENANT=foo rake db:migrate
 ```
 
+#### Modifications ActiveRecord rake tasks
+
+To create the database of all tenants.
+
+```ruby
+rake db:create:all
+```
+
+To drop the database of all tenants.
+
+```ruby
+rake db:drop:all
+```
+
 ## Use without Rails
 
 ### Specifying the source of tenants
@@ -145,35 +160,32 @@ Motel::Manager.tenants_source_configurations({
 
 ## Switching tenants
 
-You can switch between tenants setting the current tenant variable:
+To switch between tenants:
 
 ```ruby
-Motel::Manager.current_tenant = "foo"
+Motel::Manager.switch_tenant("foo")
 ```
 
-The switching of the tenant is not only based setting the variable
-of the current tenant also by the environment variable or default
-tenant. The hierarchy for tenant selection occurs in the following
-order.
-
-```ruby
-ENV["TENANT"] || Motel::Manager.current_tenant || Motel::Manager.default_tenant
-```
+To determine the tenant of the connection to retrieve a fallback is
+performed through the variables that are used to set the tenant in
+the following order: environment variable `ENV['TENANT']`,
+tenant switched `Motel::Manager.switch_tenant()` and default tenant
+`Motel::Manager.default_tenant`.
 
 Usage example:
 
 ```ruby
-  Motel::Manager.current_tenant = "foo"
+  Motel::Manager.switch_tenant("foo")
 
   FooBar.create(name: "Foo")
   # => #<FooBar id: 1, name: "Foo">
 
-  Motel::Manager.current_tenant = "bar"
+  Motel::Manager.switch_tenant("bar")
 
   FooBar.all
   # => #<ActiveRecord::Relation []>
 
-  Motel::Manager.current_tenant = "foo"
+  Motel::Manager.switch_tenant("foo")
 
   FooBar.all
   # => #<ActiveRecord::Relation [#<FooBar id: 1, name: "Foo">]>
@@ -181,68 +193,69 @@ Usage example:
 
 # Available methods
 
-Set a tenats source configurations
+Sets a tenats source configurations
 
 ```ruby
 Motel::Manager.tenants_source_configurations(config)
 ```
 
-Set a default tenant
+Switches the tenant
+
+```ruby
+Motel::Manager.switch_tenant(name)
+```
+
+Sets a default tenant
 
 ```ruby
 Motel::Manager.default_tenant
 ```
 
-Set a current tenant
+Retrieves a current tenant
 
 ```ruby
 Motel::Manager.current_tenant
 ```
 
-Retrieve the connection details of all tenants
+Retrieves the connection details of all tenants
 
 ```ruby
 Motel::Manager.tenants
 ```
 
-Retrieve a tenant
+Retrieves a tenant
 
 ```ruby
 Motel::Manager.tenant(name)
 ```
 
-Determine if a tenant exists
+Determines if a tenant exists
 
 ```ruby
 Motel::Manager.tenant?(name)
 ```
 
-Add tenant
+Adds tenant
 
 ```ruby
 Motel::Manager.add_tenant(name, spec)
 ```
 
-Update tenant
+Updates tenant
 
 ```ruby
 Motel::Manager.update_tenant(name, spec)
 ```
 
-Delete tenant
+Deletes tenant
 
 ```ruby
 Motel::Manager.delete_tenant(name)
 ```
 
-Retrieve the names of the tenants of active connections
+Retrieves the names of the tenants of active connections
 
 ```ruby
 Motel::Manager.active_tenants
 ```
 
-Determine the tenant to use for the connection
-
-```ruby
-Motel::Manager.determines_tenant
-```
