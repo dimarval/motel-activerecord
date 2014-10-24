@@ -141,6 +141,10 @@ To drop the database of all tenants.
 rake db:drop:all
 ```
 
+(Note: Is necessary to establish a **default tenant** because the
+middlewares of ActiveRecord require a connection to function
+properly and shared pages between tenants can be viewed.)
+
 ## Use without Rails
 
 ### Specifying the source of tenants
