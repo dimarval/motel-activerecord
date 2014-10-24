@@ -21,7 +21,7 @@ module Motel
             tenant_name = config.to_s
             spec = nil
           else
-            tenant_name = ENV['TENANT'] || self.name
+            tenant_name = current_tenant
             resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
             spec = resolver.spec(config)
           end
