@@ -120,14 +120,6 @@ describe Motel::Manager do
       expect(@manager.tenant?('foo')).to be_truthy
     end
 
-    it 'returns true if tenant baz does exist' do
-      resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
-      spec = resolver.spec(BAZ_SPEC)
-      handler = ::ActiveRecord::Base.connection_handler
-      handler.establish_connection('baz', spec)
-      expect(@manager.tenant?('baz')).to be_truthy
-    end
-
     it 'returns false if tenant does not exist' do
       expect(@manager.tenant?('foobar')).to be_falsey
     end
