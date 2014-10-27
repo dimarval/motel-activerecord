@@ -27,7 +27,7 @@ module Motel
       end
 
       def tenant?(name)
-        active_tenants.include?(name) || tenants_source.tenant?(name)
+        tenants_source.tenant?(name)
       end
 
       def add_tenant(name, spec)

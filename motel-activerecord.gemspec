@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = 'motel-activerecord'
   s.version     = version
   s.platform    = Gem::Platform::RUBY
-  s.date        = '2014-10-10'
+  s.date        = '2014-10-27'
   s.summary     = "Multi-tenant gem"
   s.description = "ActiveRecord extension to use connections to multiple databases"
   s.authors     = ["Diego Martínez Valdelamar"]
