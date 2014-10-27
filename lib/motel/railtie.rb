@@ -1,6 +1,8 @@
 require 'active_support/ordered_options'
 require 'motel/manager'
+require 'active_record'
 require 'rails'
+require 'active_model/railtie'
 
 module Motel
 
@@ -15,21 +17,21 @@ module Motel
     )
 
     rake_tasks do
+      require "active_record/base"
+
       namespace :db do
         task :load_config do
           Motel::Manager.tenants_source_configurations(
             Rails.application.config.motel.tenants_source_configurations
           )
 
-          # Set a current tenant allow to db:create:all task establish and
-          # retrieve the connection
-          Motel::Manager.current_tenant ||= self.class
-
           ::ActiveRecord::Tasks::DatabaseTasks.database_configuration = Motel::Manager.tenants
           ::ActiveRecord::Base.configurations = ::ActiveRecord::Tasks::DatabaseTasks.database_configuration
-          ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.determines_tenant
+          ::ActiveRecord::Tasks::DatabaseTasks.env = Motel::Manager.current_tenant
         end
       end
+
+      load "motel/active_record/railties/databases.rake"
     end
 
     ::ActiveRecord::Railtie.initializers.delete_if do |i|
@@ -39,17 +41,8 @@ module Motel
     initializer "motel.general_configuration" do
       motel_config = Rails.application.config.motel
 
-      Motel::Manager.nonexistent_tenant_page = motel_config.nonexistent_tenant_page || 'public/404.html' # Deprecated
-      Motel::Manager.admission_criteria = motel_config.admission_criteria
       Motel::Manager.default_tenant = motel_config.default_tenant
       Motel::Manager.tenants_source_configurations(motel_config.tenants_source_configurations)
-    end
-
-    # Set lobby middleware before all ActiveRecord's middlewares
-    initializer "motel.configure_middleware" do |app|
-      if !Rails.application.config.motel.disable_middleware && (Rails.env != 'test')
-        app.config.middleware.insert_after ActionDispatch::Callbacks, Lobby
-      end
     end
 
     initializer "active_record.set_reloader_hooks" do |app|
@@ -59,7 +52,7 @@ module Motel
         ActionDispatch::Reloader.send(hook) do
           ::ActiveRecord::Base.clear_reloadable_connections!
           # Clear cache of the current tenant with an active connection
-          if Motel::Manager.active_tenants.include?(Motel::Manager.determines_tenant)
+          if Motel::Manager.active_tenants.include?(Motel::Manager.current_tenant)
             ::ActiveRecord::Base.clear_cache!
           end
         end

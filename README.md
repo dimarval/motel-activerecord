@@ -8,6 +8,7 @@ connections to multiple databases, one for each tenant.
 
 * Adds multi-tenant functionality to ActiveRecord.
 * Multiple databases, one for each tenant.
+* Databases of tenants may be in different locations.
 * Tenant connection details are stored keying them by the name on a database or redis server.
 * Use with or without Rails.
 
@@ -126,29 +127,21 @@ specific tenant.
 $ TENANT=foo rake db:migrate
 ```
 
-### More configurations
-
-You can assign a default tenant if the current tenant is null:
+To create the database of all tenants.
 
 ```ruby
-config.motel.default_tenant = "my_default_tenant"
+rake db:create:all
 ```
 
-Tenants switching is done via the subdomain of the url, you can
-specify a criteria to identify the tenant providing a regex as a
-string. Example, to get the tenant `foo` from the follow url
-`http://www.example.com/foo/index` you should write:
+To drop the database of all tenants.
 
 ```ruby
-config.motel.admission_criteria = "\/(\w*)\/"
+rake db:drop:all
 ```
 
-If you do not want the automatic switching of tenants by url you must
-disable the middleware:
-
-```ruby
-config.motel.disable_middleware = true
-```
+(Note: Is necessary to establish a **default tenant** because the
+middlewares of ActiveRecord require a connection to function
+properly and shared pages between tenants can be viewed.)
 
 ## Use without Rails
 
@@ -169,37 +162,32 @@ Motel::Manager.tenants_source_configurations({
 
 ## Switching tenants
 
-If you're using Rails the tenant switching occurs automatically
-through the Lobby middleware, otherwise you must set the current
-tenant:
+To switch between tenants:
 
 ```ruby
-Motel::Manager.current_tenant = "foo"
+Motel::Manager.switch_tenant("foo")
 ```
 
-The switching of the tenant is not only based setting the variable
-of the current tenant also by the environment variable or default
-tenant. The hierarchy for tenant selection occurs in the following
-order.
-
-```ruby
-ENV["TENANT"] || Motel::Manager.current_tenant || Motel::Manager.default_tenant
-```
+To determine the tenant of the connection to retrieve a fallback is
+performed through the variables that are used to set the tenant in
+the following order: environment variable `ENV['TENANT']`,
+tenant switched `Motel::Manager.switch_tenant()` and default tenant
+`Motel::Manager.default_tenant`.
 
 Usage example:
 
 ```ruby
-  Motel::Manager.current_tenant = "foo"
+  Motel::Manager.switch_tenant("foo")
 
   FooBar.create(name: "Foo")
   # => #<FooBar id: 1, name: "Foo">
 
-  Motel::Manager.current_tenant = "bar"
+  Motel::Manager.switch_tenant("bar")
 
   FooBar.all
   # => #<ActiveRecord::Relation []>
 
-  Motel::Manager.current_tenant = "foo"
+  Motel::Manager.switch_tenant("foo")
 
   FooBar.all
   # => #<ActiveRecord::Relation [#<FooBar id: 1, name: "Foo">]>
@@ -207,74 +195,69 @@ Usage example:
 
 # Available methods
 
-Set a tenats source configurations
+Sets a tenats source configurations
 
 ```ruby
 Motel::Manager.tenants_source_configurations(config)
 ```
 
-Set the admission criteria for the middleware
+Switches the tenant
 
 ```ruby
-Motel::Manager.admission_criteria
+Motel::Manager.switch_tenant(name)
 ```
 
-Set a default tenant
+Sets a default tenant
 
 ```ruby
 Motel::Manager.default_tenant
 ```
 
-Set a current tenant
+Retrieves a current tenant
 
 ```ruby
 Motel::Manager.current_tenant
 ```
 
-Retrieve the connection details of all tenants
+Retrieves the connection details of all tenants
 
 ```ruby
 Motel::Manager.tenants
 ```
 
-Retrieve a tenant
+Retrieves a tenant
 
 ```ruby
 Motel::Manager.tenant(name)
 ```
 
-Determine if a tenant exists
+Determines if a tenant exists
 
 ```ruby
 Motel::Manager.tenant?(name)
 ```
 
-Add tenant
+Adds tenant
 
 ```ruby
 Motel::Manager.add_tenant(name, spec)
 ```
 
-Update tenant
+Updates tenant
 
 ```ruby
 Motel::Manager.update_tenant(name, spec)
 ```
 
-Delete tenant
+Deletes tenant
 
 ```ruby
 Motel::Manager.delete_tenant(name)
 ```
 
-Retrieve the names of the tenants of active connections
+Retrieves the names of the tenants of active connections
 
 ```ruby
 Motel::Manager.active_tenants
 ```
 
-Determine the tenant to use for the connection
-
-```ruby
-Motel::Manager.determines_tenant
-```

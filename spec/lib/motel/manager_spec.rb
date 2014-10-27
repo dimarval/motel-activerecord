@@ -20,7 +20,7 @@ describe Motel::Manager do
 
   after(:each) do
     ENV['TENANT'] = nil
-    @manager.current_tenant = nil
+    @manager.switch_tenant(nil)
     @manager.default_tenant = nil
 
     # Remove all connections tenant
@@ -120,14 +120,6 @@ describe Motel::Manager do
       expect(@manager.tenant?('foo')).to be_truthy
     end
 
-    it 'returns true if tenant baz does exist' do
-      resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
-      spec = resolver.spec(BAZ_SPEC)
-      handler = ::ActiveRecord::Base.connection_handler
-      handler.establish_connection('baz', spec)
-      expect(@manager.tenant?('baz')).to be_truthy
-    end
-
     it 'returns false if tenant does not exist' do
       expect(@manager.tenant?('foobar')).to be_falsey
     end
@@ -193,16 +185,17 @@ describe Motel::Manager do
 
   end
 
-  describe '#determines_tenant' do
+  describe '#current_tenant' do
 
     context 'tenant environment variable, current tenant and default tenant are set' do
 
       it 'returns tenant enviroment variable' do
         ENV['TENANT'] = 'foo'
-        @manager.current_tenant = 'bar'
         @manager.default_tenant = 'baz'
 
-        expect(@manager.determines_tenant).to eq ENV['TENANT']
+        @manager.switch_tenant('bar')
+
+        expect(@manager.current_tenant).to eq ENV['TENANT']
       end
 
     end
@@ -211,10 +204,11 @@ describe Motel::Manager do
 
       it 'returns tenant enviroment variable' do
         ENV['TENANT'] = nil
-        @manager.current_tenant = 'bar'
         @manager.default_tenant = 'baz'
 
-        expect(@manager.determines_tenant).to eq @manager.current_tenant
+        @manager.switch_tenant('bar')
+
+        expect(@manager.current_tenant).to eq 'bar'
       end
 
     end
@@ -223,10 +217,11 @@ describe Motel::Manager do
 
       it 'returns tenant enviroment variable' do
         ENV['TENANT'] = nil
-        @manager.current_tenant = nil
         @manager.default_tenant = 'baz'
 
-        expect(@manager.determines_tenant).to eq @manager.default_tenant
+        @manager.switch_tenant(nil)
+
+        expect(@manager.current_tenant).to eq 'baz'
       end
 
     end

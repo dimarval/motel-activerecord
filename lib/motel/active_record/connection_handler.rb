@@ -16,9 +16,15 @@ module Motel
       module ClassMethods
 
         def establish_connection(config)
-          tenant_name = Motel::Manager.determines_tenant || self.name
-          resolver    = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
-          spec        = resolver.spec(config)
+          case config
+          when String, Symbol
+            tenant_name = config.to_s
+            spec = nil
+          else
+            tenant_name = current_tenant
+            resolver = Motel::ConnectionAdapters::ConnectionSpecification::Resolver.new
+            spec = resolver.spec(config)
+          end
 
           connection_handler.establish_connection tenant_name, spec
         end
@@ -44,7 +50,7 @@ module Motel
         end
 
         def current_tenant
-          Motel::Manager.determines_tenant or raise Motel::NoCurrentTenantError
+          Motel::Manager.current_tenant or raise Motel::NoCurrentTenantError
         end
 
       end
