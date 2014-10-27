@@ -127,8 +127,6 @@ specific tenant.
 $ TENANT=foo rake db:migrate
 ```
 
-#### Modifications ActiveRecord rake tasks
-
 To create the database of all tenants.
 
 ```ruby
